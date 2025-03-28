@@ -13,25 +13,27 @@ This is a sample blog post written in MDX, which allows you to use React compone
 
 ## Custom Components
 
-You can create custom components and use them in your MDX files. Here's an example of how you could use a custom button component:
+You can create custom components and use them in your MDX files. Here's an example of how you could use a custom button component pulled in from the [shadcn/ui](https://ui.shadcn.com/) library:
 
 <Button>Click me!</Button>
 
 ## Interactive Elements
 
-MDX allows you to create interactive elements. Here's a simple counter component:
+MDX allows you to create interactive elements. Here's a theme switcher component:
 
-<Counter initialCount={0} />
+<div className="bg-gray-100 p-2 rounded-xl w-fit">
+  <ThemeSwitcher />
+</div>
 
 ## Styling with Tailwind
 
 You can use Tailwind classes directly in your MDX:
 
-<div className="bg-brand/10 p-6 rounded-xl border border-brand/20">
+<div className="bg-gray-100 p-6 rounded-xl border">
   <h3 className="text-xl font-semibold mb-2">Custom Styled Box</h3>
-  <p className="text-text dark:text-text-dark">
+  <span className="text-gray-900">
     This is a custom styled box using Tailwind classes.
-  </p>
+  </span>
 </div>
 
 ## Code Blocks

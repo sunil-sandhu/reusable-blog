@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BlogPost } from "../lib/blog/types";
+import { BlogPost } from "../../lib/blog/types";
 
 interface BlogListProps {
   posts: BlogPost[];

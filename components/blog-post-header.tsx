@@ -18,9 +18,9 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
   });
 
   return (
-    <header className="w-full mb-12 pt-4 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-background-secondary to-transparent">
-      <div className="max-w-7xl p-0">
-        <div className="space-y-6">
+    <header className="w-full mx-auto mb-12 pt-4 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-brand/40 to-brand/10">
+      <div className="max-w-7xl p-0 mx-auto w-full text-center">
+        <div className="space-y-6 text-center">
           {post.topic && (
             <div className="pt-2">
               <a
@@ -34,13 +34,13 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
 
           {/* Title */}
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-heading dark:text-gray-100 leading-tight tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
               {post.title}
             </h1>
           </div>
 
           {/* Author and Date */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-subtext dark:text-gray-400">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm justify-center">
             {post.author && (
               <div className="flex items-center gap-1.5">
                 <span className="text-text dark:text-gray-500">By</span>

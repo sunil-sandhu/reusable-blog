@@ -9,20 +9,50 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Laptop, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 const ThemeSwitcher = () => {
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
+    // Check localStorage and system preference on mount
+    const savedTheme = localStorage.theme;
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+      document.documentElement.classList.add("dark");
+      setTheme(savedTheme || "system");
+    } else {
+      document.documentElement.classList.remove("dark");
+      setTheme(savedTheme || "system");
+    }
+
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
+  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
+    setTheme(newTheme);
+
+    if (newTheme === "dark") {
+      localStorage.theme = "dark";
+      document.documentElement.classList.add("dark");
+    } else if (newTheme === "light") {
+      localStorage.theme = "light";
+      document.documentElement.classList.remove("dark");
+    } else {
+      localStorage.removeItem("theme");
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  };
+
+  if (!mounted) return null;
 
   const ICON_SIZE = 16;
 
@@ -45,7 +75,12 @@ const ThemeSwitcher = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-content" align="start">
-        <DropdownMenuRadioGroup value={theme} onValueChange={(e) => setTheme(e)}>
+        <DropdownMenuRadioGroup
+          value={theme}
+          onValueChange={(value) =>
+            handleThemeChange(value as "light" | "dark" | "system")
+          }
+        >
           <DropdownMenuRadioItem className="flex gap-2" value="light">
             <Sun size={ICON_SIZE} className="text-muted-foreground" />
             <span>Light</span>
@@ -65,4 +100,3 @@ const ThemeSwitcher = () => {
 };
 
 export { ThemeSwitcher };
-

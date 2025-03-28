@@ -3,7 +3,7 @@ import { BlogPostHeader } from "@/components/blog-post-header";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import TableOfContents from "@/components/table-of-contents";
-import { getPost } from "@/app/lib/blog";
+import { getPost } from "@/lib/blog";
 
 export async function generateMetadata({
   params,
@@ -53,21 +53,22 @@ export default async function BlogPostPage({
   }
 
   return (
-    <article className="relative container mx-auto px-4 py-8 max-w-4xl">
+    <article className="relative w-full mx-auto">
       {/* Full-width header section */}
       <BlogPostHeader post={post} />
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Content section with TOC */}
 
-      {/* Content section with TOC */}
+        {/* Table of Contents */}
+        <TableOfContents />
 
-      {/* Table of Contents */}
-      <TableOfContents />
-
-      {/* Main Content Area */}
-      <MarkdownRenderer
-        content={post.content}
-        isMDX={post.isMDX}
-        title={post.title}
-      />
+        {/* Main Content Area */}
+        <MarkdownRenderer
+          content={post.content}
+          isMDX={post.isMDX}
+          title={post.title}
+        />
+      </div>
     </article>
   );
 }

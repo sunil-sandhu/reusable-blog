@@ -5,7 +5,7 @@ export default function HomePage() {
     <main className="container mx-auto px-4 py-16 max-w-7xl">
       <div className="mx-auto">
         <h1 className="text-5xl font-bold mb-6">Blog Starter</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+        <p className="text-xl text-foreground/80 mb-8">
           A modern blog starter built with Next.js, Markdown, and Supabase
           support.
         </p>
@@ -19,17 +19,12 @@ export default function HomePage() {
             <ul className="list-disc pl-6 space-y-2">
               <li>
                 <strong>Local Markdown Files:</strong> Write your posts in the{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                <code className="bg-foreground/10 px-2  rounded">
                   content/blog
                 </code>{" "}
                 directory using either{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                  .md
-                </code>{" "}
-                or{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                  .mdx
-                </code>{" "}
+                <code className="bg-foreground/10 px-2  rounded">.md</code> or{" "}
+                <code className="bg-foreground/10 px-2  rounded">.mdx</code>{" "}
                 files
               </li>
               <li>
@@ -47,22 +42,17 @@ export default function HomePage() {
             <ol className="list-decimal pl-6 space-y-2">
               <li>
                 Create a new{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                  .md
-                </code>{" "}
-                or{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                  .mdx
-                </code>{" "}
+                <code className="bg-foreground/10 px-2  rounded">.md</code> or{" "}
+                <code className="bg-foreground/10 px-2  rounded">.mdx</code>{" "}
                 file in the{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                <code className="bg-foreground/10 px-2  rounded">
                   content/blog
                 </code>{" "}
                 directory
               </li>
               <li>
                 Add frontmatter at the top of your file:
-                <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mt-2">
+                <pre className="bg-foreground/10 p-4 rounded-lg mt-2">
                   {`---
 title: Your Post Title
 description: A brief description of your post
@@ -81,39 +71,31 @@ date: YYYY-MM-DD
               <li>Create a new Supabase project</li>
               <li>
                 Create a{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                  posts
-                </code>{" "}
+                <code className="bg-foreground/10 px-2 rounded">posts</code>{" "}
                 table with the following columns:
                 <ul className="list-disc pl-6 mt-2">
                   <li>
-                    <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                      slug
-                    </code>{" "}
+                    <code className="bg-foreground/10 px-2 rounded">slug</code>{" "}
                     (text, unique)
                   </li>
                   <li>
-                    <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                      title
-                    </code>{" "}
+                    <code className="bg-foreground/10 px-2 rounded">title</code>{" "}
                     (text)
                   </li>
                   <li>
-                    <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                    <code className="bg-foreground/10 px-2 rounded">
                       description
                     </code>{" "}
                     (text)
                   </li>
                   <li>
-                    <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                    <code className="bg-foreground/10 px-2 rounded">
                       content
                     </code>{" "}
                     (text)
                   </li>
                   <li>
-                    <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                      date
-                    </code>{" "}
+                    <code className="bg-foreground/10 px-2 rounded">date</code>{" "}
                     (date)
                   </li>
                 </ul>
@@ -123,7 +105,7 @@ date: YYYY-MM-DD
               </li>
               <li>
                 Update the{" "}
-                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                <code className="bg-foreground/10 px-2 rounded">
                   supabase.ts
                 </code>{" "}
                 file with your queries

@@ -1,3 +1,5 @@
+import { ThemeSwitcher } from "./theme-switcher";
+
 export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 h-12 bg-background border-b border-border z-50">
@@ -13,10 +15,11 @@ export function Navbar() {
             </a>
           </div>
 
-          {/* Navigation Links - Empty for now */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* Links will go here */}
-          </div>
+          <ThemeSwitcher />
+        </div>
+        {/* Navigation Links - Empty for now */}
+        <div className="hidden md:flex items-center space-x-8">
+          {/* Links will go here */}
         </div>
       </div>
     </nav>

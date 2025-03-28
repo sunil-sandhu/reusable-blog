@@ -1,1 +1,0 @@
-  <button className="bg-foreground text-background p-2 w-8 rounded-r-lg hover:rounded-r-none shadow-lg hover:bg-foreground/90 transition-all duration-300 flex flex-col h-48"> 

@@ -2,10 +2,9 @@
 
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import { Button } from "./Button";
-import { Counter } from "./Counter";
+import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-
+import { ThemeSwitcher } from "./theme-switcher";
 interface MDXRendererProps {
   source: string;
   className?: string;
@@ -34,7 +33,7 @@ export function MDXRenderer({
       {...serializedSource}
       components={{
         Button,
-        Counter,
+        ThemeSwitcher,
       }}
     />
   );

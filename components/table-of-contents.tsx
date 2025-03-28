@@ -127,12 +127,12 @@ export default function TableOfContents() {
 
   return (
     <div
-      className="fixed left-0 top-48 z-50 hidden lg:flex"
+      className="fixed left-0 top-40 z-50 hidden lg:flex"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Toggle Button */}
-      <button className="bg-foreground text-background p-2 w-8 rounded-r-lg hover:rounded-r-none shadow-lg hover:bg-foreground/90  transition-all duration-300 flex flex-col h-48">
+      <button className="bg-foreground text-background p-2 w-8 rounded-r-lg hover:rounded-r-none shadow-lg hover:bg-foreground/90  transition-all duration-300 flex flex-col h-40">
         <div className="flex flex-col items-center justify-between h-full">
           <span className="text-xs font-medium whitespace-nowrap rotate-90 mt-12">
             Table of Contents
