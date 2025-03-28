@@ -1,26 +1,46 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
+  /* --font-primary: "IBM Plex Sans, Helvetica, -apple-system, BlinkMacSystemFont, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI, Roboto, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji"; */
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --box-shadow: rgba(11, 43, 158, 0.15) 0px 6px 20px -6px;
+  --brand: #1938e3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --brand: #1938e3;
+    --box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 20px -6px;
   }
+}
+
+@theme {
+  --color-brand: var(--brand);
+  --font: var(--font-sans);
+  --background: var(--background);
+  --foreground: var(--foreground);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+.progress-bar {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  height: 6px;
+  border-radius: 0px 0px 0px 0px;
+  background: linear-gradient(
+    90deg,
+    rgb(113 255 245) 0%,
+    rgb(11 48 251) 100%,
+    rgb(25 56 228) 100%
+  );
 }

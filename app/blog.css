@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* Code block base styles */
+.prose pre {
+  @apply relative 
+      bg-gray-900 dark:bg-gray-950 
+      rounded-xl 
+      shadow-lg 
+      border border-gray-800/40
+      !p-4 
+      my-6;
+}
+
+.prose pre code {
+  @apply text-gray-200 dark:text-gray-300
+      font-mono 
+      text-sm 
+      leading-relaxed
+      !p-0
+      bg-transparent;
+}
+
+/* Copy button */
+.prose pre .copy-button {
+  @apply absolute 
+      top-2 
+      right-2 
+      px-2 
+      py-1 
+      text-xs
+      font-medium
+      rounded-md
+      bg-gray-800 
+      text-gray-300
+      transition-colors 
+      duration-200
+      hover:bg-gray-700
+      flex
+      items-center
+      gap-1;
+}
+
+/* Update the copy button text content */
+.prose pre .copy-button::before {
+  content: "Copy";
+}
+
+/* Add the copy icon after the text */
+.prose pre .copy-button::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(209 213 219)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3'%3E%3C/path%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+/* When copied, change the text and icon */
+.prose pre .copy-button.copied::before {
+  content: "Copied!";
+}
+
+.prose pre .copy-button.copied::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(209 213 219)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* Syntax highlighting */
+.prose .hljs-comment,
+.prose .hljs-quote {
+  @apply text-gray-500 dark:text-gray-400 italic;
+}
+
+.prose .hljs-keyword,
+.prose .hljs-selector-tag,
+.prose .hljs-addition {
+  @apply text-purple-400 dark:text-purple-300;
+}
+
+.prose .hljs-string,
+.prose .hljs-template-string {
+  @apply text-green-400 dark:text-green-300;
+}
+
+.prose .hljs-number,
+.prose .hljs-literal {
+  @apply text-orange-400 dark:text-orange-300;
+}
+
+.prose .hljs-function,
+.prose .hljs-title {
+  @apply text-blue-400 dark:text-blue-300;
+}
+
+.prose .hljs-variable,
+.prose .hljs-attr {
+  @apply text-yellow-400 dark:text-yellow-300;
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  @apply bg-gray-100 dark:bg-gray-800
+      text-gray-900 dark:text-gray-200
+      rounded-md 
+      px-1.5 
+      py-0.5
+      font-mono 
+      text-sm
+      whitespace-nowrap;
+}
+
+/* Basic table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th,
+td {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+thead {
+  border-bottom: 2px solid #e5e7eb;
+}
+
+tr:nth-child(even) {
+  background-color: #f9fafb;
+}
