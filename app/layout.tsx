@@ -1,27 +1,31 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import "./blog.css";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
 
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Blog Starter",
-  description: "Created by Sunil Sandhu using Next.js, Markdown, and Supabase",
+  title: "Blog",
+  description: "A blog built with Next.js",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${ibmPlexSans.variable} antialiased`}>{children}</body>
+      <body className={inter.className}>
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <main className="flex-grow pt-16">{children}</main>
+          <Footer />
+        </div>
+      </body>
     </html>
   );
 }

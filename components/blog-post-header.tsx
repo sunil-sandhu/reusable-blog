@@ -19,7 +19,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
 
   return (
     <header className="w-full mb-12 pt-4 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-background-secondary to-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl p-0">
         <div className="space-y-6">
           {post.topic && (
             <div className="pt-2">

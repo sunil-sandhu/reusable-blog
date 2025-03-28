@@ -127,7 +127,7 @@ export default function TableOfContents() {
 
   return (
     <div
-      className="fixed left-0 top-4 z-50 flex"
+      className="fixed left-0 top-48 z-50 hidden lg:flex"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

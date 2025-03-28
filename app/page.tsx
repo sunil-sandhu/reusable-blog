@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="container mx-auto px-4 py-16">
-      <div className="max-w-3xl mx-auto text-center">
+    <main className="container mx-auto px-4 py-16 max-w-7xl">
+      <div className="mx-auto">
         <h1 className="text-5xl font-bold mb-6">Blog Starter</h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
           A modern blog starter built with Next.js, Markdown, and Supabase

@@ -53,7 +53,7 @@ export default async function BlogPostPage({
   }
 
   return (
-    <article className="container mx-auto px-4 py-8 max-w-4xl">
+    <article className="relative container mx-auto px-4 py-8 max-w-4xl">
       {/* Full-width header section */}
       <BlogPostHeader post={post} />
 
