@@ -7,6 +7,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   topic?: string;
+  isMDX?: boolean;
 }
 
 export type DataSource = "local" | "supabase" | "all";

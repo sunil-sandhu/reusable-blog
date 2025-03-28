@@ -22,7 +22,15 @@ export default function HomePage() {
                 <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                   content/blog
                 </code>{" "}
-                directory
+                directory using either{" "}
+                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                  .md
+                </code>{" "}
+                or{" "}
+                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                  .mdx
+                </code>{" "}
+                files
               </li>
               <li>
                 <strong>Supabase Database:</strong> Store and manage your posts
@@ -41,6 +49,10 @@ export default function HomePage() {
                 Create a new{" "}
                 <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                   .md
+                </code>{" "}
+                or{" "}
+                <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                  .mdx
                 </code>{" "}
                 file in the{" "}
                 <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
