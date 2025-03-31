@@ -5,17 +5,12 @@ import { serialize } from "next-mdx-remote/serialize";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { ThemeSwitcher } from "./theme-switcher";
+
 interface MDXRendererProps {
   source: string;
-  className?: string;
-  title?: string;
 }
 
-export function MDXRenderer({
-  source,
-  className = "",
-  title,
-}: MDXRendererProps) {
+export function MDXRenderer({ source }: MDXRendererProps) {
   const [serializedSource, setSerializedSource] = useState<any>(null);
 
   useEffect(() => {

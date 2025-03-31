@@ -2,7 +2,7 @@ export interface BlogPost {
   author?: string;
   content: string;
   date: string;
-  description: string;
+  description?: string;
   featured_image_url?: string;
   slug: string;
   title: string;

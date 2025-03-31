@@ -2,6 +2,7 @@
 title: Getting Started with Next.js
 description: Learn how to build modern web applications with Next.js and React.
 date: 2024-03-27
+topic: Next.js
 ---
 
 # Getting Started with Next.js

@@ -1,9 +1,7 @@
-interface BlogPost {
-  title: string;
-  topic?: string;
-  author?: string;
-  date?: string;
-}
+import { slugify } from "@/lib/utils";
+import Link from "next/link";
+import { Badge } from "./badge";
+import { BlogPost } from "@/lib/blog/types";
 
 interface BlogPostHeaderProps {
   post: BlogPost;
@@ -21,16 +19,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
     <header className="w-full mx-auto mb-12 pt-4 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-brand/40 to-brand/10">
       <div className="max-w-7xl p-0 mx-auto w-full text-center">
         <div className="space-y-6 text-center">
-          {post.topic && (
-            <div className="pt-2">
-              <a
-                href={`/topics/${post.topic}`}
-                className="inline-flex px-3.5 py-1.5 text-sm font-medium text-brand hover:text-brand/80 bg-brand/5 dark:bg-brand/10 rounded-full transition-colors"
-              >
-                {post.topic}
-              </a>
-            </div>
-          )}
+          {post.topic && <Badge label={post.topic} directory="topics" />}
 
           {/* Title */}
           <div className="space-y-6">
@@ -45,7 +34,9 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
               <div className="flex items-center gap-1.5">
                 <span className="text-text dark:text-gray-500">By</span>
                 <p className="font-medium text-heading dark:text-gray-200 hover:text-brand dark:hover:text-brand transition-colors">
-                  {post.author}
+                  <Link href={`/authors/${slugify(post.author)}`}>
+                    {post.author}
+                  </Link>
                 </p>
               </div>
             )}
