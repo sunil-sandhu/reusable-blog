@@ -14,7 +14,7 @@ export async function generateMetadata({
   const blogName = "Cubed";
 
   const { slug } = await params;
-  const post = await getPost(slug, "local");
+  const post = await getPost(slug, "all");
   if (!post) {
     notFound();
   }
@@ -46,7 +46,7 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
-  const post = await getPost(slug, "local"); // For now, we'll only fetch local posts
+  const post = await getPost(slug, "all"); // For now, we'll only fetch local posts
 
   if (!post) {
     notFound();
