@@ -79,10 +79,6 @@ export default function TableOfContents() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
-            // Update URL hash when scrolling to a heading
-            const url = new URL(window.location.href);
-            url.hash = entry.target.id;
-            window.history.pushState({}, "", url);
           }
         });
       },
@@ -114,6 +110,10 @@ export default function TableOfContents() {
     const navbarHeight = 80;
     const elementPosition = element.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+    const url = new URL(window.location.href);
+    url.hash = slug;
+    window.history.pushState({}, "", url);
 
     window.scrollTo({
       top: offsetPosition,

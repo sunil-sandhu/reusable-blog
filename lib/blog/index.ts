@@ -1,6 +1,6 @@
 import { BlogPost, DataSource } from "./types";
 import { getAllLocalPosts, getLocalPost } from "./local";
-import { getAllSupabasePosts, getSupabasePost } from "./supabase";
+import { getAllDatabasePosts, getDatabasePost } from "./database";
 import { slugify } from "../utils";
 
 export async function getAllPosts(
@@ -13,8 +13,8 @@ export async function getAllPosts(
     posts.push(...localPosts);
   }
 
-  if (source === "all" || source === "supabase") {
-    const supabasePosts = await getAllSupabasePosts();
+  if (source === "all" || source === "database") {
+    const supabasePosts = await getAllDatabasePosts();
     posts.push(...supabasePosts);
   }
 
@@ -32,8 +32,8 @@ export async function getPost(
     if (localPost) return localPost;
   }
 
-  if (source === "all" || source === "supabase") {
-    const supabasePost = await getSupabasePost(slug);
+  if (source === "all" || source === "database") {
+    const supabasePost = await getDatabasePost(slug);
     if (supabasePost) return supabasePost;
   }
 
@@ -57,11 +57,14 @@ export async function getPostsByTopic(slug: string): Promise<BlogPost[]> {
 
 export async function getAuthors(): Promise<string[]> {
   const posts = await getAllPosts();
-  return [
+  // remove duplicates
+  const uniqueAuthors = [
     ...new Set(
       posts.map((post) => post.author).filter((author) => author !== undefined)
     ),
   ];
+  // return sorted alphabetically
+  return uniqueAuthors.sort();
 }
 
 export async function getPostsByAuthor(slug: string): Promise<BlogPost[]> {

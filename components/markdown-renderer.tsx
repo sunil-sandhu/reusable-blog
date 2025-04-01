@@ -24,7 +24,7 @@ export function MarkdownRenderer({
   const commonClassName = `prose prose-lg dark:prose-invert max-w-none 
     prose-headings:text-foreground dark:prose-headings:text-foreground
     prose-p:text-foreground/80 dark:prose-p:text-foreground/80
-    prose-a:text-brand prose-a:no-underline hover:prose-a:underline 
+    prose-a:text-brand hover:prose-a:underline 
     prose-img:rounded-xl 
     prose-pre:bg-background/95 dark:prose-pre:bg-background/95
     prose-pre:border prose-pre:border-solid prose-pre:border-border dark:prose-pre:border-border
@@ -42,7 +42,7 @@ export function MarkdownRenderer({
   if (isMDX) {
     return (
       <article className={commonClassName}>
-        <MDXRenderer source={processedContent} title={title} />
+        <MDXRenderer source={processedContent} />
       </article>
     );
   }

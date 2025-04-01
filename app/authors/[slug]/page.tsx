@@ -1,8 +1,5 @@
-// show all the blog posts that are related to the topic
-
 import { BlogList } from "@/components/blog-list";
 import { getPostsByAuthor } from "@/lib/blog";
-import Link from "next/link";
 
 export default async function AuthorPage({
   params,

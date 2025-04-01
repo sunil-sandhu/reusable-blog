@@ -10,4 +10,4 @@ export interface BlogPost {
   isMDX?: boolean;
 }
 
-export type DataSource = "local" | "supabase" | "all";
+export type DataSource = "local" | "database" | "all";

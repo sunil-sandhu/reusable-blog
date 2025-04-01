@@ -2,7 +2,7 @@ import { BlogPost } from "./types";
 import { createClient } from "@/lib/supabase/server";
 
 // These functions will be implemented once Supabase is set up
-export async function getAllSupabasePosts(): Promise<BlogPost[]> {
+export async function getAllDatabasePosts(): Promise<BlogPost[]> {
   const supabase = await createClient();
   const { data, error } = await supabase.from("posts").select("*");
 
@@ -41,7 +41,7 @@ export async function getAllSupabasePosts(): Promise<BlogPost[]> {
   return posts;
 }
 
-export async function getSupabasePost(slug: string): Promise<BlogPost | null> {
+export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("posts")
