@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
+import { dump } from "js-yaml";
+import { parseFrontmatter } from "@/lib/parse-frontmatter";
 
 const websites = [
   { id: "61175361-7a81-4947-b826-2b0174eaae44", name: "test" },
@@ -20,10 +21,15 @@ const websites = [
   },
 ];
 
+function extractFirstImageUrl(content: string): string | null {
+  const match = content.match(/!\[.*?\]\((.*?)\)/);
+  return match ? match[1] : null;
+}
+
 export async function POST() {
   try {
     const supabase = await createClient();
-    const contentDir = path.join(process.cwd(), "content/blog");
+    const contentDir = path.join(process.cwd(), "content/venture");
     const files = fs.readdirSync(contentDir);
     const results = [];
 
@@ -32,41 +38,44 @@ export async function POST() {
 
       const filePath = path.join(contentDir, file);
       const fileContent = fs.readFileSync(filePath, "utf8");
-      const { data: frontmatter, content } = matter(fileContent);
+      const { data: frontmatter, content } = parseFrontmatter(fileContent);
       const slug = file.replace(/\.(md|mdx)$/, "");
 
-      // Create frontmatter in the same format as create/page.tsx
-      const formattedFrontmatter = {
+      // Extract first image URL from content
+      const firstImageUrl = extractFirstImageUrl(content);
+
+      // Create new frontmatter with standardized fields
+      const newFrontmatter = {
+        author: Array.isArray(frontmatter.author)
+          ? frontmatter.author[0] || ""
+          : frontmatter.author || "",
         title: frontmatter.title || "",
-        description: frontmatter.description || "",
         date: frontmatter.date || new Date().toISOString(),
-        ...(frontmatter.author && { author: frontmatter.author }),
-        ...(frontmatter.topic && {
-          topic: Array.isArray(frontmatter.topic)
-            ? frontmatter.topic
-            : [frontmatter.topic],
-        }),
-        ...(frontmatter.featured_image_url && {
-          featured_image_url: frontmatter.featured_image_url,
-        }),
+        topic: Array.isArray(frontmatter.topic)
+          ? frontmatter.topic[0] || ""
+          : frontmatter.topic || "",
+        description: frontmatter.description || "",
+        featured_image_url: firstImageUrl || "",
       };
 
-      // Combine frontmatter and content in the same format
+      // Convert frontmatter to YAML
+      const yamlStr = dump(newFrontmatter, {
+        lineWidth: -1,
+        noRefs: true,
+        sortKeys: false,
+        quotingType: '"',
+      });
+
+      // Combine frontmatter and content
       const fullContent = `---
-${Object.entries(formattedFrontmatter)
-  .map(
-    ([key, value]) =>
-      `${key}: ${Array.isArray(value) ? value.join(", ") : value}`
-  )
-  .join("\n")}
----
+${yamlStr}---
 
 ${content}`;
 
       const { data, error } = await supabase.from("posts").insert({
         slug,
         content: fullContent,
-        website_id: websites.find((w) => w.name === "cubed")?.id,
+        website_id: websites.find((w) => w.name === "venture")?.id,
       });
 
       results.push({ file, success: !error, error });

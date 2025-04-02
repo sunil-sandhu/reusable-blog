@@ -1,6 +1,6 @@
+import { parseFrontmatter } from "../parse-frontmatter";
 import { BlogPost } from "./types";
 import { createClient } from "@/lib/supabase/server";
-import matter from "gray-matter";
 
 // These functions will be implemented once Supabase is set up
 export async function getAllDatabasePosts(): Promise<BlogPost[]> {
@@ -15,18 +15,16 @@ export async function getAllDatabasePosts(): Promise<BlogPost[]> {
   // get the frontmatter from the content
   const posts = await Promise.all(
     data.map(async (post) => {
-      // Use gray-matter to parse frontmatter and content
-      const { data: frontmatter, content } = matter(post.content);
-
+      const { data: frontmatter, content } = parseFrontmatter(post.content);
       return {
         ...post,
         slug: post.slug,
-        title: frontmatter.title,
-        description: frontmatter.description,
-        date: frontmatter.date,
-        author: frontmatter.author,
-        topic: frontmatter.topic,
-        featured_image_url: frontmatter.featured_image_url,
+        title: frontmatter.title || "",
+        description: frontmatter.description || "",
+        date: frontmatter.date || new Date().toISOString(),
+        author: frontmatter.author || "",
+        topic: frontmatter.topic || "",
+        featured_image_url: frontmatter.featured_image_url || "",
         content,
       };
     })
@@ -47,18 +45,17 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
     return null;
   }
 
-  // Use gray-matter to parse frontmatter and content
-  const { data: frontmatter, content } = matter(data.content);
+  const { data: frontmatter, content } = parseFrontmatter(data.content);
 
   return {
     ...data,
     slug: data.slug,
-    title: frontmatter.title,
-    description: frontmatter.description,
-    date: frontmatter.date,
-    author: frontmatter.author,
-    topic: frontmatter.topic,
-    featured_image_url: frontmatter.featured_image_url,
+    title: frontmatter.title || "",
+    description: frontmatter.description || "",
+    date: frontmatter.date || new Date().toISOString(),
+    author: frontmatter.author || "",
+    topic: frontmatter.topic || "",
+    featured_image_url: frontmatter.featured_image_url || "",
     content,
   };
 }

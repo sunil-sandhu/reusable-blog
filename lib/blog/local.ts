@@ -1,7 +1,16 @@
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
 import { BlogPost } from "./types";
+import { parseFrontmatter } from "../parse-frontmatter";
+
+interface Frontmatter {
+  title?: string;
+  description?: string;
+  date?: string;
+  topic?: string;
+  author?: string;
+  featured_image_url?: string;
+}
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
@@ -13,18 +22,18 @@ export async function getAllLocalPosts(): Promise<BlogPost[]> {
     .map((file) => {
       const filePath = path.join(BLOG_DIR, file);
       const fileContent = fs.readFileSync(filePath, "utf8");
-      const { data, content } = matter(fileContent);
+      const { data, content } = parseFrontmatter(fileContent);
       const slug = file.replace(/\.(md|mdx)$/, "");
 
       return {
         slug,
-        title: data.title,
-        description: data.description,
+        title: data.title || "",
+        description: data.description || "",
         content,
-        date: data.date,
-        topic: data.topic,
-        author: data.author,
-        featured_image_url: data.featured_image_url,
+        date: data.date || new Date().toISOString(),
+        topic: data.topic || "",
+        author: data.author || "",
+        featured_image_url: data.featured_image_url || "",
         isMDX: file.endsWith(".mdx"),
       };
     })
@@ -52,17 +61,17 @@ export async function getLocalPost(slug: string): Promise<BlogPost | null> {
     }
 
     const fileContent = fs.readFileSync(filePath, "utf8");
-    const { data, content } = matter(fileContent);
+    const { data, content } = parseFrontmatter(fileContent);
 
     return {
       slug,
-      title: data.title,
-      description: data.description,
+      title: data.title || "",
+      description: data.description || "",
       content,
-      date: data.date,
-      topic: data.topic,
-      author: data.author,
-      featured_image_url: data.featured_image_url,
+      date: data.date || new Date().toISOString(),
+      topic: data.topic || "",
+      author: data.author || "",
+      featured_image_url: data.featured_image_url || "",
       isMDX,
     };
   } catch (error) {

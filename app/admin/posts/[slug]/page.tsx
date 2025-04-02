@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
-import matter from "gray-matter";
+import { parseFrontmatter } from "@/lib/parse-frontmatter";
 
 interface FormData {
   title: string;
@@ -66,7 +66,7 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
       }
 
       // Parse frontmatter
-      const { data: frontmatter, content: postContent } = matter(
+      const { data: frontmatter, content: postContent } = parseFrontmatter(
         postData.content
       );
 

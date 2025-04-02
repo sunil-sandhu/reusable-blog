@@ -41,26 +41,32 @@ export async function getPost(
 }
 
 export async function getTopics(): Promise<string[]> {
-  const posts = await getAllPosts();
-  // remove duplicates
+  const posts = await getAllPosts("all");
+  // remove duplicates and empty strings
   const uniqueTopics = [
-    ...new Set(posts.map((post) => slugify(post.topic || ""))),
+    ...new Set(
+      posts
+        .map((post) => post.topic?.toLowerCase() || "")
+        .filter((topic): topic is string => topic !== "")
+    ),
   ];
   // return sorted alphabetically
   return uniqueTopics.sort();
 }
 
 export async function getPostsByTopic(slug: string): Promise<BlogPost[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts("all");
   return posts.filter((post) => slugify(post.topic || "") === slug);
 }
 
 export async function getAuthors(): Promise<string[]> {
-  const posts = await getAllPosts();
-  // remove duplicates
+  const posts = await getAllPosts("all");
+  // remove duplicates and empty strings
   const uniqueAuthors = [
     ...new Set(
-      posts.map((post) => post.author).filter((author) => author !== undefined)
+      posts
+        .map((post) => post.author || "")
+        .filter((author): author is string => author !== "")
     ),
   ];
   // return sorted alphabetically
@@ -68,6 +74,6 @@ export async function getAuthors(): Promise<string[]> {
 }
 
 export async function getPostsByAuthor(slug: string): Promise<BlogPost[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts("all");
   return posts.filter((post) => slugify(post.author || "") === slug);
 }

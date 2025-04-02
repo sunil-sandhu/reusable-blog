@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import matter from "gray-matter";
 import { BlogPost } from "@/lib/blog/types";
+import { parseFrontmatter } from "@/lib/parse-frontmatter";
 
 interface BlogPostWithWebsite extends BlogPost {
   id: string;
@@ -43,15 +43,15 @@ export default function AdminPostsPage() {
 
       // Parse frontmatter for each post
       const postsWithFrontmatter = data.map((post) => {
-        const { data: frontmatter } = matter(post.content);
+        const { data: frontmatter } = parseFrontmatter(post.content);
         return {
           ...post,
-          title: frontmatter.title,
-          description: frontmatter.description,
-          date: frontmatter.date,
-          author: frontmatter.author,
-          topic: frontmatter.topic,
-          featured_image_url: frontmatter.featured_image_url,
+          title: frontmatter.title || "",
+          description: frontmatter.description || "",
+          date: frontmatter.date || new Date().toISOString(),
+          author: frontmatter.author || "",
+          topic: frontmatter.topic || "",
+          featured_image_url: frontmatter.featured_image_url || "",
         };
       });
 

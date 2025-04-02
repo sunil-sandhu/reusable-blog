@@ -4,11 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "migrate": "node migrate-content.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -21,9 +20,11 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
+    "@types/js-yaml": "^4.0.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
     "lucide-react": "^0.485.0",
     "marked": "^15.0.7",
     "next": "15.2.4",
