@@ -75,7 +75,7 @@ export default function AdminPostsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Blog Posts</CardTitle>
-          <Button onClick={() => router.push("/create")}>
+          <Button onClick={() => router.push("/admin/posts/create")}>
             Create New Post
           </Button>
         </CardHeader>

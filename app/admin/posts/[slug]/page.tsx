@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, use } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,8 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
   const [websites, setWebsites] = useState<any[]>([]);
   const [selectedWebsite, setSelectedWebsite] = useState("");
 
+  const { slug } = useParams();
+
   useEffect(() => {
     const fetchData = async () => {
       // Fetch websites
@@ -55,7 +57,7 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
       const { data: postData, error } = await supabase
         .from("posts")
         .select("*")
-        .eq("slug", params.slug)
+        .eq("slug", slug)
         .single();
 
       if (error) {
@@ -89,7 +91,7 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
     };
 
     fetchData();
-  }, [params.slug]);
+  }, [slug]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
