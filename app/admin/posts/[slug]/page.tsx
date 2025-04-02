@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
+import matter from "gray-matter";
 
 interface FormData {
   title: string;
@@ -25,7 +26,7 @@ interface FormData {
   featuredImageUrl: string;
 }
 
-export default function CreatePost() {
+export default function EditPostPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const editorRef = useRef<MDXEditorMethods>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -36,17 +37,59 @@ export default function CreatePost() {
     featuredImageUrl: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState("");
   const supabase = createClient();
   const [websites, setWebsites] = useState<any[]>([]);
   const [selectedWebsite, setSelectedWebsite] = useState("");
 
   useEffect(() => {
-    const fetchWebsites = async () => {
-      const { data } = await supabase.from("websites").select("*");
-      setWebsites(data || []);
+    const fetchData = async () => {
+      // Fetch websites
+      const { data: websitesData } = await supabase
+        .from("websites")
+        .select("*");
+      setWebsites(websitesData || []);
+
+      // Fetch post data
+      const { data: postData, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("slug", params.slug)
+        .single();
+
+      if (error) {
+        console.error("Error fetching post:", error);
+        return;
+      }
+
+      // Parse frontmatter
+      const { data: frontmatter, content: postContent } = matter(
+        postData.content
+      );
+
+      // Set form data
+      setFormData({
+        title: frontmatter.title || "",
+        description: frontmatter.description || "",
+        author: frontmatter.author || "",
+        topic: Array.isArray(frontmatter.topic)
+          ? frontmatter.topic[0]
+          : frontmatter.topic || "",
+        featuredImageUrl: frontmatter.featured_image_url || "",
+      });
+
+      // Set website
+      setSelectedWebsite(postData.website_id);
+
+      // Set content
+      setContent(postContent);
+
+      setLoading(false);
     };
-    fetchWebsites();
-  }, []);
+
+    fetchData();
+  }, [params.slug]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,12 +101,7 @@ export default function CreatePost() {
     setIsSubmitting(true);
 
     try {
-      const slug = formData.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-
-      const content = editorRef.current?.getMarkdown() || "";
+      const currentContent = editorRef.current?.getMarkdown() || content;
 
       const frontmatter = {
         title: formData.title,
@@ -85,58 +123,61 @@ ${Object.entries(frontmatter)
   .join("\n")}
 ---
 
-${content}`;
+${currentContent}`;
 
-      const { error } = await supabase.from("posts").insert({
-        content: fullContent,
-        slug,
-        website_id: selectedWebsite,
-      });
+      const { error } = await supabase
+        .from("posts")
+        .update({
+          content: fullContent,
+          website_id: selectedWebsite,
+        })
+        .eq("slug", params.slug);
 
       if (error) throw error;
 
-      router.push(`/blog/${slug}`);
+      router.push("/admin/posts");
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error("Error updating post:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const formFields = useMemo(
-    () => [
-      {
-        id: "title",
-        label: "Title",
-        required: true,
-      },
-      {
-        id: "description",
-        label: "Description",
-      },
-      {
-        id: "author",
-        label: "Author",
-      },
-      {
-        id: "topic",
-        label: "Topic",
-        placeholder: "e.g., Technology",
-      },
-      {
-        id: "featuredImageUrl",
-        label: "Featured Image URL",
-        placeholder: "https://example.com/image.jpg",
-      },
-    ],
-    []
-  );
+  const formFields = [
+    {
+      id: "title",
+      label: "Title",
+      required: true,
+    },
+    {
+      id: "description",
+      label: "Description",
+    },
+    {
+      id: "author",
+      label: "Author",
+    },
+    {
+      id: "topic",
+      label: "Topic",
+      placeholder: "e.g., Technology",
+    },
+    {
+      id: "featuredImageUrl",
+      label: "Featured Image URL",
+      placeholder: "https://example.com/image.jpg",
+    },
+  ];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto py-8">
       <Card>
         <CardHeader>
-          <CardTitle>Create New Blog Post</CardTitle>
+          <CardTitle>Edit Blog Post</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,15 +220,24 @@ ${content}`;
                 <div className="min-h-[400px] border rounded-md">
                   <Editor
                     ref={editorRef}
-                    markdown=""
+                    markdown={content}
                     contentEditableClassName="prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none"
                   />
                 </div>
               </div>
 
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Publishing..." : "Publish Post"}
-              </Button>
+              <div className="flex gap-4">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Updating..." : "Update Post"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push("/admin/posts")}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </form>
         </CardContent>

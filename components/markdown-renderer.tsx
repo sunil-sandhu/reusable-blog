@@ -34,6 +34,7 @@ export function MarkdownRenderer({
     prose-ul:marker:text-foreground/60 dark:prose-ul:marker:text-foreground/60
     ${className}`;
 
+
   // Skip first line if it matches the title (any heading level or plain text)
   const processedContent = title
     ? content.replace(new RegExp(`^(#{1,6}\\s*)?${title}\\n`, "m"), "")
