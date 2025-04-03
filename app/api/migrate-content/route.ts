@@ -2,22 +2,20 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { dump } from "js-yaml";
-import { parseFrontmatter } from "@/lib/parse-frontmatter";
 
 const websites = [
-  { id: "61175361-7a81-4947-b826-2b0174eaae44", name: "test" },
+  { id: "61175361-7a81-4947-b826-2b0174eaae44", name: "Test" },
   {
     id: "1bec3555-8ca2-46a9-a497-187500a45b35",
-    name: "cubed",
+    name: "Cubed",
   },
   {
     id: "e9e78dca-8727-4e70-9037-0e1127ad397c",
-    name: "stackademic",
+    name: "Stackademic",
   },
   {
     id: "ef1b69cf-7cdb-4ebe-849f-463b1a2ad58e",
-    name: "venture",
+    name: "Venture Magazine",
   },
 ];
 
@@ -29,7 +27,7 @@ function extractFirstImageUrl(content: string): string | null {
 export async function POST() {
   try {
     const supabase = await createClient();
-    const contentDir = path.join(process.cwd(), "content/venture");
+    const contentDir = path.join(process.cwd(), `content/${process.env.NEXT_PUBLIC_WEBSITE_NAME}`);
     const files = fs.readdirSync(contentDir);
     const results = [];
 
@@ -38,44 +36,20 @@ export async function POST() {
 
       const filePath = path.join(contentDir, file);
       const fileContent = fs.readFileSync(filePath, "utf8");
-      const { data: frontmatter, content } = parseFrontmatter(fileContent);
       const slug = file.replace(/\.(md|mdx)$/, "");
 
       // Extract first image URL from content
-      const firstImageUrl = extractFirstImageUrl(content);
-
-      // Create new frontmatter with standardized fields
-      const newFrontmatter = {
-        author: Array.isArray(frontmatter.author)
-          ? frontmatter.author[0] || ""
-          : frontmatter.author || "",
-        title: frontmatter.title || "",
-        date: frontmatter.date || new Date().toISOString(),
-        topic: Array.isArray(frontmatter.topic)
-          ? frontmatter.topic[0] || ""
-          : frontmatter.topic || "",
-        description: frontmatter.description || "",
-        featured_image_url: firstImageUrl || "",
-      };
-
-      // Convert frontmatter to YAML
-      const yamlStr = dump(newFrontmatter, {
-        lineWidth: -1,
-        noRefs: true,
-        sortKeys: false,
-        quotingType: '"',
-      });
-
-      // Combine frontmatter and content
-      const fullContent = `---
-${yamlStr}---
-
-${content}`;
+      const firstImageUrl = extractFirstImageUrl(fileContent);
 
       const { data, error } = await supabase.from("posts").insert({
         slug,
-        content: fullContent,
-        website_id: websites.find((w) => w.name === "venture")?.id,
+        content: fileContent,
+        website_id: websites.find((w) => w.name === process.env.NEXT_PUBLIC_WEBSITE_NAME)?.id,
+        title: slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+        description: "",
+        author: "",
+        topic: "",
+        featured_image_url: firstImageUrl || "",
       });
 
       results.push({ file, success: !error, error });
@@ -87,10 +61,7 @@ ${content}`;
     });
   } catch (error) {
     return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
+      { success: false, error: (error as Error).message },
       { status: 500 }
     );
   }

@@ -10,11 +10,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const baseUrl = "https://cubed.run";
-  const blogName = "Cubed";
+  const baseUrl = process.env.NEXT_PUBLIC_URL;
+  const blogName = process.env.NEXT_PUBLIC_WEBSITE_NAME;
 
   const { slug } = await params;
-  const post = await getPost(slug, "all");
+  const post = await getPost(slug, "database");
   if (!post) {
     notFound();
   }
@@ -46,7 +46,7 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
-  const post = await getPost(slug, "all"); // For now, we'll only fetch local posts
+  const post = await getPost(slug, "database");
 
   if (!post) {
     notFound();

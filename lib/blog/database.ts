@@ -1,4 +1,3 @@
-import { parseFrontmatter } from "../parse-frontmatter";
 import { BlogPost } from "./types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,24 +11,17 @@ export async function getAllDatabasePosts(): Promise<BlogPost[]> {
     return [];
   }
 
-  // get the frontmatter from the content
-  const posts = await Promise.all(
-    data.map(async (post) => {
-      const { data: frontmatter, content } = parseFrontmatter(post.content);
-      return {
-        ...post,
-        slug: post.slug,
-        title: frontmatter.title || "",
-        description: frontmatter.description || "",
-        date: frontmatter.date || new Date().toISOString(),
-        author: frontmatter.author || "",
-        topic: frontmatter.topic || "",
-        featured_image_url: frontmatter.featured_image_url || "",
-        content,
-      };
-    })
-  );
-  return posts;
+  return data.map((post) => ({
+    ...post,
+    slug: post.slug,
+    title: post.title,
+    description: post.description,
+    date: post.created_at,
+    author: post.author,
+    topic: post.topic,
+    featured_image_url: post.featured_image_url,
+    content: post.content,
+  }));
 }
 
 export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
@@ -45,17 +37,15 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
     return null;
   }
 
-  const { data: frontmatter, content } = parseFrontmatter(data.content);
-
   return {
     ...data,
     slug: data.slug,
-    title: frontmatter.title || "",
-    description: frontmatter.description || "",
-    date: frontmatter.date || new Date().toISOString(),
-    author: frontmatter.author || "",
-    topic: frontmatter.topic || "",
-    featured_image_url: frontmatter.featured_image_url || "",
-    content,
+    title: data.title,
+    description: data.description,
+    date: data.created_at,
+    author: data.author,
+    topic: data.topic,
+    featured_image_url: data.featured_image_url,
+    content: data.content,
   };
 }

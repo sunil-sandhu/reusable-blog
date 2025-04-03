@@ -2,7 +2,7 @@ import { BlogList } from "../../components/blog-list";
 import { getAllPosts } from "../../lib/blog";
 
 export default async function BlogPage() {
-  const posts = await getAllPosts("database"); // For now, we'll only show local posts
+  const posts = await getAllPosts("database");
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-7xl">

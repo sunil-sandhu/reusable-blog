@@ -65,32 +65,15 @@ export default function CreatePost() {
 
       const content = editorRef.current?.getMarkdown() || "";
 
-      const frontmatter = {
-        title: formData.title,
-        description: formData.description,
-        date: new Date().toISOString(),
-        ...(formData.author && { author: formData.author }),
-        ...(formData.topic && { topic: [formData.topic] }),
-        ...(formData.featuredImageUrl && {
-          featured_image_url: formData.featuredImageUrl,
-        }),
-      };
-
-      const fullContent = `---
-${Object.entries(frontmatter)
-  .map(
-    ([key, value]) =>
-      `${key}: ${Array.isArray(value) ? value.join(", ") : value}`
-  )
-  .join("\n")}
----
-
-${content}`;
-
       const { error } = await supabase.from("posts").insert({
-        content: fullContent,
+        content,
         slug,
         website_id: selectedWebsite,
+        title: formData.title,
+        description: formData.description,
+        author: formData.author,
+        topic: formData.topic,
+        featured_image_url: formData.featuredImageUrl,
       });
 
       if (error) throw error;

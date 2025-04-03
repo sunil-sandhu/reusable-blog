@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
-import { parseFrontmatter } from "@/lib/parse-frontmatter";
 
 interface FormData {
   title: string;
@@ -65,27 +64,20 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
         return;
       }
 
-      // Parse frontmatter
-      const { data: frontmatter, content: postContent } = parseFrontmatter(
-        postData.content
-      );
-
       // Set form data
       setFormData({
-        title: frontmatter.title || "",
-        description: frontmatter.description || "",
-        author: frontmatter.author || "",
-        topic: Array.isArray(frontmatter.topic)
-          ? frontmatter.topic[0]
-          : frontmatter.topic || "",
-        featuredImageUrl: frontmatter.featured_image_url || "",
+        title: postData.title || "",
+        description: postData.description || "",
+        author: postData.author || "",
+        topic: postData.topic || "",
+        featuredImageUrl: postData.featured_image_url || "",
       });
 
       // Set website
       setSelectedWebsite(postData.website_id);
 
       // Set content
-      setContent(postContent);
+      setContent(postData.content);
 
       setLoading(false);
     };
@@ -105,33 +97,16 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
     try {
       const currentContent = editorRef.current?.getMarkdown() || content;
 
-      const frontmatter = {
-        title: formData.title,
-        description: formData.description,
-        date: new Date().toISOString(),
-        ...(formData.author && { author: formData.author }),
-        ...(formData.topic && { topic: [formData.topic] }),
-        ...(formData.featuredImageUrl && {
-          featured_image_url: formData.featuredImageUrl,
-        }),
-      };
-
-      const fullContent = `---
-${Object.entries(frontmatter)
-  .map(
-    ([key, value]) =>
-      `${key}: ${Array.isArray(value) ? value.join(", ") : value}`
-  )
-  .join("\n")}
----
-
-${currentContent}`;
-
       const { error } = await supabase
         .from("posts")
         .update({
-          content: fullContent,
+          content: currentContent,
           website_id: selectedWebsite,
+          title: formData.title,
+          description: formData.description,
+          author: formData.author,
+          topic: formData.topic,
+          featured_image_url: formData.featuredImageUrl,
         })
         .eq("slug", params.slug);
 
