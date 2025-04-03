@@ -25,7 +25,8 @@ interface FormData {
   featuredImageUrl: string;
 }
 
-export default function EditPostPage({ params }: { params: { slug: string } }) {
+export default function EditPostPage() {
+  const { slug } = useParams();
   const router = useRouter();
   const editorRef = useRef<MDXEditorMethods>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -41,8 +42,6 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
   const supabase = createClient();
   const [websites, setWebsites] = useState<any[]>([]);
   const [selectedWebsite, setSelectedWebsite] = useState("");
-
-  const { slug } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +107,7 @@ export default function EditPostPage({ params }: { params: { slug: string } }) {
           topic: formData.topic,
           featured_image_url: formData.featuredImageUrl,
         })
-        .eq("slug", params.slug);
+        .eq("slug", slug);
 
       if (error) throw error;
 
