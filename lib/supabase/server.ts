@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
+import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export const createClient = async () => {
   const cookieStore = await cookies();
@@ -9,18 +11,14 @@ export const createClient = async () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
+        get(name: string) {
+          return cookieStore.get(name)?.value;
         },
-        setAll(cookie: { name: string; value: string; options: any }) {
-          try {
-            cookieStore.set(cookie.name, cookie.value, cookie.options);
-          } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-            console.error(error);
-          }
+        set(name: string, value: string, options: Partial<ResponseCookie>) {
+          cookieStore.set(name, value, options);
+        },
+        remove(name: string) {
+          cookieStore.delete(name);
         },
       },
     }
