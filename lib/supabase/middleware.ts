@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
@@ -17,15 +18,22 @@ export const updateSession = async (request: NextRequest) => {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() {
-            return request.cookies.getAll();
+          get(name: string) {
+            return request.cookies.get(name)?.value;
           },
-          setAll(cookie: { name: string; value: string; options: any }) {
-            request.cookies.set(cookie.name, cookie.value);
+          set(name: string, value: string, options: Partial<ResponseCookie>) {
+            request.cookies.set(name, value);
             response = NextResponse.next({
               request,
             });
-            response.cookies.set(cookie.name, cookie.value, cookie.options);
+            response.cookies.set(name, value, options);
+          },
+          remove(name: string) {
+            request.cookies.delete(name);
+            response = NextResponse.next({
+              request,
+            });
+            response.cookies.delete(name);
           },
         },
       }
