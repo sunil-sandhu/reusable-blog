@@ -10,6 +10,11 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  if (!process.env.NEXT_PUBLIC_WEBSITE_NAME || !process.env.NEXT_PUBLIC_URL) {
+    console.warn("NEXT_PUBLIC_WEBSITE_NAME or NEXT_PUBLIC_URL is not set");
+    return {};
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_URL;
   const blogName = process.env.NEXT_PUBLIC_WEBSITE_NAME;
 

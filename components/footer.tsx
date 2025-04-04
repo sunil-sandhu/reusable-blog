@@ -11,7 +11,8 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()}{" "}
-              {process.env.NEXT_PUBLIC_WEBSITE_NAME}. All rights reserved.
+              {process.env.NEXT_PUBLIC_WEBSITE_NAME || "The Blog"}. All rights
+              reserved.
             </p>
             {/* Social links will go here */}
             <div className="flex flex-row gap-4"></div>

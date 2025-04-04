@@ -3,50 +3,84 @@ import { createClient } from "@/lib/supabase/client";
 
 // These functions will be implemented once Supabase is set up
 export async function getAllDatabasePosts(): Promise<BlogPost[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("website_id", process.env.WEBSITE_ID);
+  if (!process.env.WEBSITE_ID) {
+    console.warn("WEBSITE_ID is not set, querying all posts");
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching posts:", error);
-    return [];
+    if (error) {
+      console.error("Error fetching posts:", error);
+      return [];
+    }
+
+    return data;
+  } else {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .eq("website_id", process.env.WEBSITE_ID);
+
+    if (error) {
+      console.error("Error fetching posts:", error);
+      return [];
+    }
+
+    return data.map((post) => ({
+      ...post,
+      slug: post.slug,
+      title: post.title,
+      description: post.description,
+      date: post.created_at,
+      author: post.author,
+      topic: post.topic,
+      featured_image_url: post.featured_image_url,
+      content: post.content,
+    }));
   }
-
-  return data.map((post) => ({
-    ...post,
-    slug: post.slug,
-    title: post.title,
-    description: post.description,
-    date: post.created_at,
-    author: post.author,
-    topic: post.topic,
-    featured_image_url: post.featured_image_url,
-    content: post.content,
-  }));
 }
 
 export async function getLatestDatabasePosts(): Promise<BlogPost[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("website_id", process.env.WEBSITE_ID)
-    .order("created_at", { ascending: false })
-    .limit(12);
+  if (!process.env.WEBSITE_ID) {
+    console.warn("WEBSITE_ID is not set, querying all posts");
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(12);
 
-  if (error) {
-    console.error("Error fetching posts:", error);
-    return [];
+    if (error) {
+      console.error("Error fetching posts:", error);
+      return [];
+    }
+
+    return data;
+  } else {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("website_id", process.env.WEBSITE_ID)
+      .order("created_at", { ascending: false })
+      .limit(12);
+
+    if (error) {
+      console.error("Error fetching posts:", error);
+      return [];
+    }
+
+    return data.map((post) => ({
+      ...post,
+      slug: post.slug,
+      title: post.title,
+      description: post.description,
+    }));
   }
-
-  return data.map((post) => ({
-    ...post,
-    slug: post.slug,
-    title: post.title,
-    description: post.description,
-  }));
 }
 
 export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
