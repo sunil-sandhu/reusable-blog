@@ -35,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generate blog post entries
   const blogEntries = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(post.date || new Date()),
     changeFrequency: "weekly" as ChangeFreq,
     priority: 0.6,
   }));
