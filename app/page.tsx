@@ -1,130 +1,89 @@
 import Link from "next/link";
+import { getLatestDatabasePosts } from "@/lib/blog/database";
+import { formatDate } from "@/lib/utils";
+import Image from "next/image";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const latestPosts = await getLatestDatabasePosts();
+
   return (
-    <main className="container mx-auto px-4 py-16 max-w-7xl">
-      <div className="mx-auto">
-        <h1 className="text-5xl font-bold mb-6">Blog Starter</h1>
-        <p className="text-xl text-foreground/80 mb-8">
-          A modern blog starter built with Next.js, Markdown, and Supabase
-          support.
+    <main className="container mx-auto px-4 py-12 max-w-7xl">
+      {/* Hero Section */}
+      <section className="mb-16">
+        <h1 className="text-6xl font-bold mb-6">
+          {process.env.NEXT_PUBLIC_WEBSITE_NAME || "The Blog"}
+        </h1>
+        <p className="text-xl text-foreground/80 max-w-2xl">
+          {process.env.NEXT_PUBLIC_WEBSITE_DESCRIPTION}
         </p>
+      </section>
 
-        <div className="space-y-8 text-left">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
-            <p className="mb-4">
-              This starter comes with two ways to manage your blog content:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                <strong>Local Markdown Files:</strong> Write your posts in the{" "}
-                <code className="bg-foreground/10 px-2  rounded">
-                  content/blog
-                </code>{" "}
-                directory using either{" "}
-                <code className="bg-foreground/10 px-2  rounded">.md</code> or{" "}
-                <code className="bg-foreground/10 px-2  rounded">.mdx</code>{" "}
-                files
-              </li>
-              <li>
-                <strong>Supabase Database:</strong> Store and manage your posts
-                in a Supabase database
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">
-              Using Local Markdown
-            </h2>
-            <p className="mb-4">To add a new blog post using markdown files:</p>
-            <ol className="list-decimal pl-6 space-y-2">
-              <li>
-                Create a new{" "}
-                <code className="bg-foreground/10 px-2  rounded">.md</code> or{" "}
-                <code className="bg-foreground/10 px-2  rounded">.mdx</code>{" "}
-                file in the{" "}
-                <code className="bg-foreground/10 px-2  rounded">
-                  content/blog
-                </code>{" "}
-                directory
-              </li>
-              <li>
-                Add frontmatter at the top of your file:
-                <pre className="bg-foreground/10 p-4 rounded-lg mt-2">
-                  {`---
-title: Your Post Title
-description: A brief description of your post
-date: YYYY-MM-DD
----`}
-                </pre>
-              </li>
-              <li>Write your content in markdown below the frontmatter</li>
-            </ol>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Using Supabase</h2>
-            <p className="mb-4">To set up Supabase as your database:</p>
-            <ol className="list-decimal pl-6 space-y-2">
-              <li>Create a new Supabase project</li>
-              <li>
-                Create a{" "}
-                <code className="bg-foreground/10 px-2 rounded">posts</code>{" "}
-                table with the following columns:
-                <ul className="list-disc pl-6 mt-2">
-                  <li>
-                    <code className="bg-foreground/10 px-2 rounded">slug</code>{" "}
-                    (text, unique)
-                  </li>
-                  <li>
-                    <code className="bg-foreground/10 px-2 rounded">title</code>{" "}
-                    (text)
-                  </li>
-                  <li>
-                    <code className="bg-foreground/10 px-2 rounded">
-                      description
-                    </code>{" "}
-                    (text)
-                  </li>
-                  <li>
-                    <code className="bg-foreground/10 px-2 rounded">
-                      content
-                    </code>{" "}
-                    (text)
-                  </li>
-                  <li>
-                    <code className="bg-foreground/10 px-2 rounded">date</code>{" "}
-                    (date)
-                  </li>
-                </ul>
-              </li>
-              <li>
-                Add your Supabase credentials to your environment variables
-              </li>
-              <li>
-                Update the{" "}
-                <code className="bg-foreground/10 px-2 rounded">
-                  supabase.ts
-                </code>{" "}
-                file with your queries
-              </li>
-            </ol>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">View Your Blog</h2>
-            <p className="mb-4">Check out your blog posts at:</p>
-            <Link
-              href="/blog"
-              className="inline-block bg-brand text-white px-6 py-3 rounded-lg hover:bg-brand/90 transition-colors"
-            >
-              View Blog Posts
+      {/* Featured Posts */}
+      <section className="mb-16">
+        <h2 className="text-3xl font-semibold mb-8">Latest Stories</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {latestPosts.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
+              <article className="h-full flex flex-col">
+                {post.featured_image_url ? (
+                  <div className="relative w-full aspect-video mb-4 overflow-hidden rounded-lg">
+                    <img
+                      src={post.featured_image_url}
+                      alt={post.title}
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative w-full aspect-video mb-4 overflow-hidden rounded-lg bg-gray-200" />
+                )}
+                <div className="flex-1">
+                  {post.topic && (
+                    <span className="text-sm font-medium text-brand mb-2 block">
+                      {post.topic}
+                    </span>
+                  )}
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-brand transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-foreground/70 mb-4 line-clamp-2">
+                    {post.description}
+                  </p>
+                  <div className="flex items-center justify-between text-sm text-foreground/60">
+                    {post.author && <span>{post.author}</span>}
+                    {post.date && (
+                      <time dateTime={post.date}>{formatDate(post.date)}</time>
+                    )}
+                  </div>
+                </div>
+              </article>
             </Link>
-          </section>
+          ))}
         </div>
-      </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="bg-foreground/5 p-8 rounded-lg">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl font-semibold mb-4">Stay Updated</h2>
+          <p className="text-foreground/70 mb-6">
+            Subscribe to our newsletter to receive the latest posts and updates
+            directly in your inbox.
+          </p>
+          <form className="flex gap-4 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-2 rounded-lg border border-foreground/20 focus:outline-none focus:ring-2 focus:ring-brand"
+            />
+            <button
+              type="submit"
+              className="bg-brand text-white px-6 py-2 rounded-lg hover:bg-brand/90 transition-colors"
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
+      </section>
     </main>
   );
 }

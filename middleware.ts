@@ -6,11 +6,19 @@ import { verifyPassword } from "./lib/auth";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
 const ADMIN_PASSWORD_SALT = process.env.ADMIN_PASSWORD_SALT || "";
+const ADMIN_ENABLED = process.env.ADMIN_ENABLED === "true";
 
 export async function middleware(request: NextRequest) {
   // Only protect admin routes
   if (!request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.next();
+  }
+
+  // If admin is disabled, return 404 to make it appear as if the route doesn't exist
+  if (!ADMIN_ENABLED) {
+    return new NextResponse("Not Found", {
+      status: 404,
+    });
   }
 
   // Check for basic auth header

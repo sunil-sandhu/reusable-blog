@@ -1,7 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
 export const createClient = async () => {
   const cookieStore = await cookies();
