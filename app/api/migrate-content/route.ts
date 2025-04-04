@@ -15,7 +15,7 @@ const websites = [
   },
   {
     id: "ef1b69cf-7cdb-4ebe-849f-463b1a2ad58e",
-    name: "Venture Magazine",
+    name: "Venture",
   },
 ];
 
