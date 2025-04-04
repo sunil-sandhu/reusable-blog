@@ -32,7 +32,7 @@ export function Footer() {
               In Plain English Ltd © {new Date().getFullYear()}
             </p>
             <div className="flex justify-center mt-8 mb-4">
-              <a href="/">
+              <a href="https://plainenglish.io">
                 <Logo color="blue" size="30" />
               </a>
             </div>
