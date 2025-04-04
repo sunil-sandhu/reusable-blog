@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getLatestDatabasePosts } from "@/lib/blog/database";
 import { formatDate } from "@/lib/utils";
-import Image from "next/image";
+import FormRenderer from "@/components/FormulaV24StandaloneRenderer/App";
 
 export default async function HomePage() {
   const latestPosts = await getLatestDatabasePosts();
@@ -62,27 +62,8 @@ export default async function HomePage() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="bg-foreground/5 p-8 rounded-lg">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-4">Stay Updated</h2>
-          <p className="text-foreground/70 mb-6">
-            Subscribe to our newsletter to receive the latest posts and updates
-            directly in your inbox.
-          </p>
-          <form className="flex gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 rounded-lg border border-foreground/20 focus:outline-none focus:ring-2 focus:ring-brand"
-            />
-            <button
-              type="submit"
-              className="bg-brand text-white px-6 py-2 rounded-lg hover:bg-brand/90 transition-colors"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
+      <section className="max-w-4xl mx-auto text-center">
+        <FormRenderer />
       </section>
     </main>
   );
