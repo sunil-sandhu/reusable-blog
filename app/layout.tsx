@@ -5,6 +5,7 @@ import "./blog.css";
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
 import ThemeProvider from "@/components/theme-provider";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -38,6 +39,9 @@ export default function RootLayout({
           </div>
         </ThemeProvider>
       </body>
+      {process.env.GOOGLE_ANALYTICS_ID && (
+        <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID} />
+      )}
     </html>
   );
 }
