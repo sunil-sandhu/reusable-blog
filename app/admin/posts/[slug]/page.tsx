@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
+import { revalidatePages } from "@/lib/utils/revalidate";
 
 interface FormData {
   title: string;
@@ -110,6 +111,9 @@ export default function EditPostPage() {
         .eq("slug", slug);
 
       if (error) throw error;
+
+      // Revalidate pages after successful post update
+      await revalidatePages();
 
       router.push("/admin/posts");
     } catch (error) {

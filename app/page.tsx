@@ -3,6 +3,8 @@ import { getLatestDatabasePosts } from "@/lib/blog/database";
 import { formatDate } from "@/lib/utils";
 import FormRenderer from "@/components/FormulaV24StandaloneRenderer/App";
 
+export const revalidate = 86400; // Revalidate every 24 hours as fallback
+
 export default async function HomePage() {
   const latestPosts = await getLatestDatabasePosts();
 

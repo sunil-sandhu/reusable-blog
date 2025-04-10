@@ -1,6 +1,8 @@
 import { getPostsByTopic } from "@/lib/blog";
 import { BlogList } from "@/components/blog-list";
 
+export const revalidate = 86400; // Revalidate every 24 hours
+
 export default async function TopicPage({
   params,
 }: {

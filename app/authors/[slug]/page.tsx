@@ -1,6 +1,8 @@
 import { BlogList } from "@/components/blog-list";
 import { getPostsByAuthor } from "@/lib/blog";
 
+export const revalidate = 86400; // Revalidate every 24 hours
+
 export default async function AuthorPage({
   params,
 }: {

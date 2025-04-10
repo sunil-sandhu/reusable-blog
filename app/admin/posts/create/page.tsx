@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MDXEditorMethods } from "@mdxeditor/editor";
+import { revalidatePages } from "@/lib/utils/revalidate";
 
 interface FormData {
   title: string;
@@ -77,6 +78,9 @@ export default function CreatePost() {
       });
 
       if (error) throw error;
+
+      // Revalidate pages after successful post creation
+      await revalidatePages();
 
       router.push(`/blog/${slug}`);
     } catch (error) {

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { revalidatePages } from "@/lib/utils/revalidate";
 
 interface BlogPostWithWebsite {
   id: string;
@@ -151,6 +152,9 @@ export default function PostsPage() {
           };
         })
       );
+
+      // Revalidate pages after successful update
+      await revalidatePages();
     } catch (error) {
       console.error("Error updating post:", error);
     }

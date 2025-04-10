@@ -1,6 +1,9 @@
 import { getAuthors } from "@/lib/blog";
 import { Badge } from "@/components/badge";
 
+
+export const revalidate = 86400; // Revalidate every 24 hours
+
 export default async function TopicsPage() {
   const authors = await getAuthors();
 
