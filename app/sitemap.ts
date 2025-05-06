@@ -1,6 +1,9 @@
 import { MetadataRoute } from "next";
 import { getAllDatabasePosts } from "@/lib/blog/database";
 
+// revalidate the sitemap every day
+export const revalidate = 3600 * 24;
+
 type ChangeFreq =
   | "daily"
   | "weekly"
