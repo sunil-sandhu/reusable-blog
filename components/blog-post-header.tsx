@@ -16,7 +16,7 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
   });
 
   return (
-    <header className="w-full mx-auto mb-12 pt-12 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-brand/40 to-brand/10">
+    <header className="w-full mx-auto mb-12 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-brand/40 to-brand/10">
       <div className="max-w-7xl p-0 mx-auto w-full text-center">
         <div className="space-y-6 text-center">
           {post.topic && <Badge label={post.topic} directory="topics" />}

@@ -12,7 +12,7 @@ export default async function HomePage() {
     <main className="container mx-auto px-4 py-12 max-w-7xl">
       {/* Hero Section */}
       <section className="mb-16">
-        <h1 className="text-6xl font-bold mb-6">
+        <h1 className="text-6xl font-bold mb-6 pt-12">
           {process.env.NEXT_PUBLIC_WEBSITE_NAME || "The Blog"}
         </h1>
         <p className="text-xl text-foreground/80 max-w-2xl">

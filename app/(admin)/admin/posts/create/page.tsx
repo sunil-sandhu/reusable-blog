@@ -120,8 +120,8 @@ export default function CreatePost() {
   );
 
   return (
-    <div className="container mx-auto py-8">
-      <Card>
+    <div className="">
+      <Card className="border-none">
         <CardHeader>
           <CardTitle>Create New Blog Post</CardTitle>
         </CardHeader>
@@ -163,7 +163,7 @@ export default function CreatePost() {
 
               <div>
                 <Label>Content</Label>
-                <div className="min-h-[400px] border rounded-md">
+                <div className="min-h-[400px] border">
                   <Editor
                     ref={editorRef}
                     markdown=""

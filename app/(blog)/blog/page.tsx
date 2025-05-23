@@ -1,5 +1,5 @@
-import { BlogList } from "../../components/blog-list";
-import { getAllPosts } from "../../lib/blog";
+import { BlogList } from "../../../components/blog-list";
+import { getAllPosts } from "../../../lib/blog";
 
 export const revalidate = 86400; // Revalidate every 24 hours as fallback
 
