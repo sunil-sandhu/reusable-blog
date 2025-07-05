@@ -20,6 +20,7 @@ export function FormRenderer({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   if (!is_public) {
     return (
@@ -31,12 +32,38 @@ export function FormRenderer({
     );
   }
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    structure.fields.forEach(field => {
+      const value = formData[field.id];
+      if (field.required) {
+        if (field.type === "multiselect" && (!Array.isArray(value) || value.length === 0)) {
+          errors[field.id] = "This field is required.";
+        } else if (!value || (typeof value === "string" && value.trim() === "")) {
+          errors[field.id] = "This field is required.";
+        }
+      }
+      if (field.inputType === "email" && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          errors[field.id] = "Please enter a valid email address.";
+        }
+      }
+    });
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting || isSubmitted) return;
-    setIsSubmitting(true);
     setError(null);
-
+    const errors = validateForm();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setIsSubmitting(false);
+      return;
+    }
+    setIsSubmitting(true);
     try {
       if (onSubmit) {
         await onSubmit(formData);
@@ -61,9 +88,7 @@ export function FormRenderer({
 
       setIsSubmitted(true);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to submit form"
-      );
+      setError(error instanceof Error ? error.message : "Failed to submit form");
     } finally {
       setIsSubmitting(false);
     }
