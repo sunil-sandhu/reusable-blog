@@ -1,6 +1,6 @@
 // Base component styles
 export const baseStyles = {
-  container: "max-w-7xl mx-auto py-8",
+  container: "max-w-6xl mx-auto py-8",
   card: "rounded-lg shadow-sm bg-white",
   cardHeader: "rounded-t-lg p-4 border-b border-gray-200 bg-brand",
   cardTitle: "text-xl font-semibold text-3xl text-white",
