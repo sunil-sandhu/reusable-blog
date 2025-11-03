@@ -64,7 +64,8 @@ export default function InitializeEditor({
     <MDXEditor
       plugins={[
         toolbarPlugin({
-          toolbarClassName: "sticky",
+          toolbarClassName:
+            "sticky top-0 z-10 bg-card border-b border-border shadow-sm",
           toolbarContents: () => (
             <>
               <UndoRedo />
