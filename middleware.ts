@@ -2,10 +2,21 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyPassword } from "./lib/auth";
 
-// This should be moved to environment variables in production
+// Admin account credentials
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
 const ADMIN_PASSWORD_SALT = process.env.ADMIN_PASSWORD_SALT || "";
+
+// Editor account credentials
+const EDITOR_USERNAME = process.env.EDITOR_USERNAME || "editor";
+const EDITOR_PASSWORD_HASH = process.env.EDITOR_PASSWORD_HASH || "";
+const EDITOR_PASSWORD_SALT = process.env.EDITOR_PASSWORD_SALT || "";
+
+// Buyer account credentials
+const BUYER_USERNAME = process.env.BUYER_USERNAME || "buyer";
+const BUYER_PASSWORD_HASH = process.env.BUYER_PASSWORD_HASH || "";
+const BUYER_PASSWORD_SALT = process.env.BUYER_PASSWORD_SALT || "";
+
 const ADMIN_ENABLED = process.env.ADMIN_ENABLED === "true";
 
 export async function middleware(request: NextRequest) {
@@ -43,17 +54,55 @@ export async function middleware(request: NextRequest) {
 
   console.log("Attempting login with:", { username, hasPassword: !!password });
 
-  // Verify credentials
-  const isValidPassword = await verifyPassword(
-    password,
-    ADMIN_PASSWORD_HASH,
+  // Check admin account
+  if (
+    username === ADMIN_USERNAME &&
+    ADMIN_PASSWORD_HASH &&
     ADMIN_PASSWORD_SALT
-  );
-  console.log("Password verification result:", isValidPassword);
+  ) {
+    const isValidPassword = await verifyPassword(
+      password,
+      ADMIN_PASSWORD_HASH,
+      ADMIN_PASSWORD_SALT
+    );
+    if (isValidPassword) {
+      console.log("Login successful (admin account)");
+      return NextResponse.next();
+    }
+  }
 
-  if (username === ADMIN_USERNAME && isValidPassword) {
-    console.log("Login successful");
-    return NextResponse.next();
+  // Check editor account
+  if (
+    username === EDITOR_USERNAME &&
+    EDITOR_PASSWORD_HASH &&
+    EDITOR_PASSWORD_SALT
+  ) {
+    const isValidPassword = await verifyPassword(
+      password,
+      EDITOR_PASSWORD_HASH,
+      EDITOR_PASSWORD_SALT
+    );
+    if (isValidPassword) {
+      console.log("Login successful (editor account)");
+      return NextResponse.next();
+    }
+  }
+
+  // Check buyer account
+  if (
+    username === BUYER_USERNAME &&
+    BUYER_PASSWORD_HASH &&
+    BUYER_PASSWORD_SALT
+  ) {
+    const isValidPassword = await verifyPassword(
+      password,
+      BUYER_PASSWORD_HASH,
+      BUYER_PASSWORD_SALT
+    );
+    if (isValidPassword) {
+      console.log("Login successful (buyer account)");
+      return NextResponse.next();
+    }
   }
 
   console.log("Login failed");
