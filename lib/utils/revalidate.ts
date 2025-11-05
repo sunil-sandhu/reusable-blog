@@ -1,34 +1,14 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+
 export async function revalidatePages() {
   try {
-    const response = await fetch("/api/revalidate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        secret: process.env.REVALIDATION_SECRET,
-        path: "/",
-      }),
-    });
+    // Revalidate the home page
+    revalidatePath("/");
 
-    if (!response.ok) {
-      throw new Error("Failed to revalidate home page");
-    }
-
-    const blogResponse = await fetch("/api/revalidate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        secret: process.env.REVALIDATION_SECRET,
-        path: "/blog",
-      }),
-    });
-
-    if (!blogResponse.ok) {
-      throw new Error("Failed to revalidate blog page");
-    }
+    // Revalidate the blog page
+    revalidatePath("/blog");
 
     return true;
   } catch (error) {
