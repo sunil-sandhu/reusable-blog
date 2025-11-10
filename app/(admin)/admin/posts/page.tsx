@@ -190,10 +190,10 @@ export default function PostsPage() {
         return (
           post.title.toLowerCase().includes(query) ||
           post.slug.toLowerCase().includes(query) ||
-          post.author.toLowerCase().includes(query) ||
-          post.topic.toLowerCase().includes(query) ||
-          post.description.toLowerCase().includes(query) ||
-          post.website.name.toLowerCase().includes(query)
+          post.author?.toLowerCase().includes(query) ||
+          post.topic?.toLowerCase().includes(query) ||
+          post.description?.toLowerCase().includes(query) ||
+          post.website.name?.toLowerCase().includes(query)
         );
       });
     }
@@ -261,11 +261,11 @@ export default function PostsPage() {
       </div>
 
       {/* Filters Card */}
-      <Card className="mb-6">
+      <Card className="mb-6 bg-transparent">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Filter className="h-4 w-4" />
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Filter className="h-4 w-4 text-foreground" />
               Filters
             </CardTitle>
             {hasActiveFilters && (
@@ -273,9 +273,9 @@ export default function PostsPage() {
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="h-8"
+                className="h-8 text-foreground"
               >
-                <X className="mr-2 h-4 w-4" />
+                <X className="mr-2 h-4 w-4 text-foreground" />
                 Clear Filters
               </Button>
             )}
@@ -292,52 +292,69 @@ export default function PostsPage() {
                   placeholder="Search posts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
 
             {/* Website Filter */}
             <Select value={filterWebsite} onValueChange={setFilterWebsite}>
-              <SelectTrigger>
+              <SelectTrigger className="text-foreground">
                 <SelectValue placeholder="All Websites" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Websites</SelectItem>
+                <SelectItem value="all" className="text-foreground">
+                  All Websites
+                </SelectItem>
                 {websites.map((website) => (
-                  <SelectItem key={website.id} value={website.id}>
+                  <SelectItem
+                    key={website.id}
+                    value={website.id}
+                    className="text-foreground"
+                  >
                     {website.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Author Filter */}
-            <Select value={filterAuthor} onValueChange={setFilterAuthor}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Authors" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Authors</SelectItem>
-                {uniqueAuthors.map((author) => (
-                  <SelectItem key={author} value={author}>
-                    {author}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
+          {/* Author Filter */}
+          <Select value={filterAuthor} onValueChange={setFilterAuthor}>
+            <SelectTrigger className="text-foreground mt-4">
+              <SelectValue placeholder="All Authors" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="text-foreground">
+                All Authors
+              </SelectItem>
+              {uniqueAuthors.map((author) => (
+                <SelectItem
+                  key={author}
+                  value={author}
+                  className="text-foreground"
+                >
+                  {author}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {/* Topic Filter */}
           <div className="mt-4">
             <Select value={filterTopic} onValueChange={setFilterTopic}>
-              <SelectTrigger className="w-full md:w-[300px]">
+              <SelectTrigger className="w-full md:w-[300px] text-foreground">
                 <SelectValue placeholder="All Topics" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Topics</SelectItem>
+                <SelectItem value="all" className="text-foreground">
+                  All Topics
+                </SelectItem>
                 {uniqueTopics.map((topic) => (
-                  <SelectItem key={topic} value={topic}>
+                  <SelectItem
+                    key={topic}
+                    value={topic}
+                    className="text-foreground"
+                  >
                     {topic}
                   </SelectItem>
                 ))}

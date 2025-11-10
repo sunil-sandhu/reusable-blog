@@ -137,11 +137,13 @@ export default function EditPostPage() {
       {
         id: "author",
         label: "Author",
+        placeholder: "e.g., John Doe",
       },
       {
         id: "topic",
         label: "Topic",
         placeholder: "e.g., Technology",
+        required: true,
       },
       {
         id: "featuredImageUrl",
@@ -194,7 +196,7 @@ export default function EditPostPage() {
       >
         <div className="grid gap-6 lg:grid-cols-[320px_1fr] xl:grid-cols-[380px_1fr]">
           {/* Desktop Sidebar - Metadata (Left Side) */}
-          <div className="hidden lg:block w-[320px] xl:w-[380px] border-r border-border bg-card/50 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+          <div className="hidden lg:block w-[320px] xl:w-[380px] border-r border-border sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
             <div className="p-6 space-y-6">
               <h2 className="text-lg font-semibold">Metadata</h2>
 
