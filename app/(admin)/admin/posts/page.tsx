@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { revalidatePages } from "@/lib/utils/revalidate";
-import { Search, X, Plus, Filter } from "lucide-react";
+import { Search, X, Plus, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BlogPostWithWebsite {
   id: string;
@@ -46,14 +46,19 @@ interface Website {
   name: string;
 }
 
+const POSTS_PER_PAGE = 100;
+
 export default function PostsPage() {
   const [posts, setPosts] = useState<BlogPostWithWebsite[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [websites, setWebsites] = useState<Website[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterWebsite, setFilterWebsite] = useState<string>("all");
   const [filterAuthor, setFilterAuthor] = useState<string>("all");
   const [filterTopic, setFilterTopic] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const [editingCell, setEditingCell] = useState<{
     postId: string;
     field: string;
@@ -62,26 +67,64 @@ export default function PostsPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchData = async () => {
-      // Fetch websites
+    const fetchWebsites = async () => {
       const { data: websitesData } = await supabase
         .from("websites")
         .select("*");
       setWebsites(websitesData || []);
+    };
 
-      // Fetch posts
-      const { data: posts, error } = await supabase
+    fetchWebsites();
+  }, []);
+
+  const performSearch = async (page: number = 1) => {
+    setLoading(true);
+    setCurrentPage(page);
+    setHasSearched(true);
+
+    try {
+      let query = supabase
         .from("posts")
-        .select("*, website:websites(*)")
+        .select("*, website:websites(*)", { count: "exact" })
         .order("created_at", { ascending: false });
+
+      // Apply filters
+      if (filterWebsite !== "all") {
+        query = query.eq("website_id", filterWebsite);
+      }
+
+      if (filterAuthor !== "all") {
+        query = query.eq("author", filterAuthor);
+      }
+
+      if (filterTopic !== "all") {
+        query = query.eq("topic", filterTopic);
+      }
+
+      // Apply search query
+      if (searchQuery.trim()) {
+        const searchTerm = searchQuery.trim();
+        query = query.or(
+          `title.ilike.*${searchTerm}*,slug.ilike.*${searchTerm}*,author.ilike.*${searchTerm}*,topic.ilike.*${searchTerm}*,description.ilike.*${searchTerm}*`
+        );
+      }
+
+      // Apply pagination
+      const from = (page - 1) * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+      query = query.range(from, to);
+
+      const { data: posts, error, count } = await query;
 
       if (error) {
         console.error("Error fetching posts:", error);
+        setLoading(false);
         return;
       }
 
+      setTotalCount(count || 0);
       setPosts(
-        posts.map((post) => ({
+        (posts || []).map((post) => ({
           id: post.id,
           title: post.title,
           slug: post.slug,
@@ -97,11 +140,16 @@ export default function PostsPage() {
           },
         }))
       );
+    } catch (error) {
+      console.error("Error searching posts:", error);
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
-    fetchData();
-  }, []);
+  const handleSearch = () => {
+    performSearch(1);
+  };
 
   const handleDoubleClick = (postId: string, field: string, value: string) => {
     setEditingCell({ postId, field });
@@ -161,6 +209,9 @@ export default function PostsPage() {
 
       // Revalidate pages after successful update
       await revalidatePages();
+      
+      // Refresh current page data
+      await performSearch(currentPage);
     } catch (error) {
       console.error("Error updating post:", error);
     }
@@ -168,53 +219,34 @@ export default function PostsPage() {
     setEditingCell(null);
   };
 
-  // Get unique authors and topics for filters
-  const uniqueAuthors = useMemo(() => {
-    const authors = new Set(posts.map((post) => post.author).filter(Boolean));
-    return Array.from(authors).sort();
-  }, [posts]);
+  // Fetch unique authors and topics for filter dropdowns
+  const [uniqueAuthors, setUniqueAuthors] = useState<string[]>([]);
+  const [uniqueTopics, setUniqueTopics] = useState<string[]>([]);
 
-  const uniqueTopics = useMemo(() => {
-    const topics = new Set(posts.map((post) => post.topic).filter(Boolean));
-    return Array.from(topics).sort();
-  }, [posts]);
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      const [authorsResult, topicsResult] = await Promise.all([
+        supabase.from("posts").select("author").not("author", "is", null),
+        supabase.from("posts").select("topic").not("topic", "is", null),
+      ]);
 
-  // Filter posts based on search and filters
-  const filteredPosts = useMemo(() => {
-    let filtered = posts;
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter((post) => {
-        return (
-          post.title.toLowerCase().includes(query) ||
-          post.slug.toLowerCase().includes(query) ||
-          post.author?.toLowerCase().includes(query) ||
-          post.topic?.toLowerCase().includes(query) ||
-          post.description?.toLowerCase().includes(query) ||
-          post.website.name?.toLowerCase().includes(query)
+      if (authorsResult.data) {
+        const authors = new Set(
+          authorsResult.data.map((p) => p.author).filter(Boolean)
         );
-      });
-    }
+        setUniqueAuthors(Array.from(authors).sort() as string[]);
+      }
 
-    // Website filter
-    if (filterWebsite !== "all") {
-      filtered = filtered.filter((post) => post.website.id === filterWebsite);
-    }
+      if (topicsResult.data) {
+        const topics = new Set(
+          topicsResult.data.map((p) => p.topic).filter(Boolean)
+        );
+        setUniqueTopics(Array.from(topics).sort() as string[]);
+      }
+    };
 
-    // Author filter
-    if (filterAuthor !== "all") {
-      filtered = filtered.filter((post) => post.author === filterAuthor);
-    }
-
-    // Topic filter
-    if (filterTopic !== "all") {
-      filtered = filtered.filter((post) => post.topic === filterTopic);
-    }
-
-    return filtered;
-  }, [posts, searchQuery, filterWebsite, filterAuthor, filterTopic]);
+    fetchFilterOptions();
+  }, []);
 
   const hasActiveFilters =
     searchQuery ||
@@ -227,20 +259,13 @@ export default function PostsPage() {
     setFilterWebsite("all");
     setFilterAuthor("all");
     setFilterTopic("all");
+    setPosts([]);
+    setTotalCount(0);
+    setCurrentPage(1);
+    setHasSearched(false);
   };
 
-  if (loading) {
-    return (
-      <div className="mx-auto p-8 max-w-7xl">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading posts...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
 
   return (
     <div className="mx-auto p-6 lg:p-8 max-w-7xl">
@@ -292,6 +317,11 @@ export default function PostsPage() {
                   placeholder="Search posts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch();
+                    }
+                  }}
                   className="pl-10 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
@@ -317,6 +347,25 @@ export default function PostsPage() {
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Search Button */}
+            <Button
+              onClick={handleSearch}
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="mr-2 h-4 w-4" />
+                  Search
+                </>
+              )}
+            </Button>
           </div>
 
           {/* Author Filter */}
@@ -363,19 +412,52 @@ export default function PostsPage() {
           </div>
 
           {/* Results Count */}
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing{" "}
-              <span className="font-semibold text-foreground">
-                {filteredPosts.length}
-              </span>{" "}
-              of{" "}
-              <span className="font-semibold text-foreground">
-                {posts.length}
-              </span>{" "}
-              posts
-            </p>
-          </div>
+          {hasSearched && (
+            <div className="mt-4 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Showing{" "}
+                <span className="font-semibold text-foreground">
+                  {posts.length > 0
+                    ? (currentPage - 1) * POSTS_PER_PAGE + 1
+                    : 0}
+                </span>
+                {" - "}
+                <span className="font-semibold text-foreground">
+                  {Math.min(currentPage * POSTS_PER_PAGE, totalCount)}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-foreground">
+                  {totalCount}
+                </span>{" "}
+                posts
+              </p>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => performSearch(currentPage - 1)}
+                    disabled={currentPage === 1 || loading}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => performSearch(currentPage + 1)}
+                    disabled={currentPage === totalPages || loading}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -396,7 +478,30 @@ export default function PostsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPosts.length === 0 ? (
+                {!hasSearched ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-2">
+                        <Search className="h-8 w-8 text-muted-foreground" />
+                        <p className="text-muted-foreground font-medium">
+                          No search performed
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Use the filters above to search for posts
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <p className="text-muted-foreground">Loading posts...</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : posts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center py-12">
                       <div className="flex flex-col items-center gap-2">
@@ -405,9 +510,7 @@ export default function PostsPage() {
                           No posts found
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {hasActiveFilters
-                            ? "Try adjusting your filters"
-                            : "Create your first post to get started"}
+                          Try adjusting your filters or search query
                         </p>
                         {hasActiveFilters && (
                           <Button
@@ -423,7 +526,7 @@ export default function PostsPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredPosts.map((post) => (
+                  posts.map((post) => (
                     <TableRow key={post.id}>
                       <TableCell
                         onDoubleClick={() =>
@@ -489,7 +592,7 @@ export default function PostsPage() {
                                   .from("posts")
                                   .update({ website_id: value })
                                   .eq("id", post.id)
-                                  .then(({ error }) => {
+                                  .then(async ({ error }) => {
                                     if (error) {
                                       console.error(
                                         "Error updating website:",
@@ -497,20 +600,10 @@ export default function PostsPage() {
                                       );
                                       return;
                                     }
-                                    // Update local state
-                                    setPosts((prevPosts) =>
-                                      prevPosts.map((p) =>
-                                        p.id === post.id
-                                          ? {
-                                              ...p,
-                                              website: {
-                                                id: value,
-                                                name: website.name,
-                                              },
-                                            }
-                                          : p
-                                      )
-                                    );
+                                    // Revalidate pages
+                                    await revalidatePages();
+                                    // Refresh current page data
+                                    await performSearch(currentPage);
                                   });
                                 setEditingCell(null);
                               }
