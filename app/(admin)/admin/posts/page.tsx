@@ -23,7 +23,14 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { revalidatePages } from "@/lib/utils/revalidate";
-import { Search, X, Plus, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Search,
+  X,
+  Plus,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 interface BlogPostWithWebsite {
   id: string;
@@ -209,7 +216,7 @@ export default function PostsPage() {
 
       // Revalidate pages after successful update
       await revalidatePages();
-      
+
       // Refresh current page data
       await performSearch(currentPage);
     } catch (error) {
@@ -497,7 +504,9 @@ export default function PostsPage() {
                     <TableCell colSpan={7} className="text-center py-12">
                       <div className="flex flex-col items-center gap-2">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        <p className="text-muted-foreground">Loading posts...</p>
+                        <p className="text-muted-foreground">
+                          Loading posts...
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>
