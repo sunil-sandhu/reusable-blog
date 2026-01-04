@@ -6,6 +6,14 @@ import rehypePrism from "rehype-prism-plus";
 import rehypeSlug from "rehype-slug";
 import rehypeRaw from "rehype-raw";
 import { MDXRenderer } from "./mdx-renderer";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 import "prismjs/themes/prism-tomorrow.css";
 
 interface MarkdownRendererProps {
@@ -57,6 +65,26 @@ export function MarkdownRenderer({
           rehypeRaw,
           [rehypePrism, { ignoreMissing: true }],
         ]}
+        components={{
+          table: ({ children, ...props }) => (
+            <Table {...props}>{children}</Table>
+          ),
+          thead: ({ children, ...props }) => (
+            <TableHeader {...props}>{children}</TableHeader>
+          ),
+          tbody: ({ children, ...props }) => (
+            <TableBody {...props}>{children}</TableBody>
+          ),
+          tr: ({ children, ...props }) => (
+            <TableRow {...props}>{children}</TableRow>
+          ),
+          th: ({ children, ...props }) => (
+            <TableHead {...props}>{children}</TableHead>
+          ),
+          td: ({ children, ...props }) => (
+            <TableCell {...props}>{children}</TableCell>
+          ),
+        }}
       >
         {processedContent}
       </ReactMarkdown>

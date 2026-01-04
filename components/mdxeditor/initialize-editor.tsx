@@ -29,6 +29,7 @@ import {
   codeMirrorPlugin,
   useCodeBlockEditorContext,
   CodeBlockEditorDescriptor,
+  tablePlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 
@@ -94,6 +95,7 @@ export default function InitializeEditor({
         listsPlugin(),
         quotePlugin(),
         thematicBreakPlugin(),
+        tablePlugin(),
         codeMirrorPlugin(),
         codeBlockPlugin({
           codeBlockEditorDescriptors: [PlainTextCodeEditorDescriptor],

@@ -126,29 +126,30 @@
       whitespace-nowrap;
 }
 
-/* Basic table styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
+/* Table styles - using shadcn Table components, but ensuring prose compatibility */
+.prose table {
+  @apply w-full my-6;
 }
 
-th,
-td {
-  border: 1px solid #e5e7eb;
-  padding: 0.75rem;
-  text-align: left;
+.prose table[data-slot="table"] {
+  @apply border-collapse;
 }
 
-th {
-  background-color: #f9fafb;
-  font-weight: 600;
+.prose th[data-slot="table-head"],
+.prose td[data-slot="table-cell"] {
+  @apply border-border;
 }
 
-thead {
-  border-bottom: 2px solid #e5e7eb;
+/* Ensure tables are scrollable on mobile */
+.prose [data-slot="table-container"] {
+  @apply overflow-x-auto -mx-4 sm:mx-0;
 }
 
-tr:nth-child(even) {
-  background-color: #f9fafb;
+/* Add some spacing around tables in prose */
+.prose table + * {
+  @apply mt-6;
+}
+
+.prose * + table {
+  @apply mt-6;
 }
