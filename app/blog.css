@@ -135,11 +135,6 @@
   @apply border-collapse;
 }
 
-.prose th[data-slot="table-head"],
-.prose td[data-slot="table-cell"] {
-  @apply border-border;
-}
-
 /* Ensure tables are scrollable on mobile */
 .prose [data-slot="table-container"] {
   @apply overflow-x-auto -mx-4 sm:mx-0;
