@@ -65,10 +65,9 @@ export default function InitializeEditor({
     <MDXEditor
       plugins={[
         toolbarPlugin({
-          toolbarClassName:
-            "sticky top-0 z-10 bg-card border-b border-border shadow-sm",
+          toolbarClassName: "",
           toolbarContents: () => (
-            <>
+            <div className="sticky top-0 z-10 bg-white border-b border-border shadow-sm flex flex-row flex-wrap items-center">
               <UndoRedo />
               <BoldItalicUnderlineToggles />
               <BlockTypeSelect />
@@ -81,7 +80,7 @@ export default function InitializeEditor({
               <div className="rte-md-toggle">
                 <DiffSourceToggleWrapper> </DiffSourceToggleWrapper>
               </div>
-            </>
+            </div>
           ),
         }),
         diffSourcePlugin({

@@ -74,18 +74,25 @@
   @apply text-gray-500 dark:text-gray-400 italic;
 }
 
+/* MDX Editor Container - Allow sticky positioning */
+.editor-container {
+  position: relative;
+}
+
+.editor-container > div,
+.editor-container [data-mdx-editor],
+.editor-container .mdxeditor-root {
+  position: relative;
+}
+
 /* MDX Editor Toolbar Sticky */
 .editor-container [role="toolbar"],
 .editor-container .cmdk-root,
 [data-mdx-editor] [role="toolbar"],
 .mdxeditor-root [role="toolbar"],
 .mdxeditor [role="toolbar"] {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 10 !important;
-  background: hsl(var(--card)) !important;
-  border-bottom: 1px solid hsl(var(--border)) !important;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+  background: white !important;
+  box-shadow: 0 !important;
 }
 
 .prose .hljs-keyword,

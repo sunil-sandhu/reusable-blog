@@ -34,12 +34,12 @@ export default function AdminDashboard() {
           .from("posts")
           .select("*", { count: "exact", head: true });
 
-        // Get posts with website information
-        const { data: posts } = await supabase
-          .from("posts")
-          .select("website:websites(name)");
+        // Get all websites
+        const { data: websites } = await supabase
+          .from("websites")
+          .select("id, name");
 
-        if (!posts) {
+        if (!websites) {
           setStats({
             totalPosts: totalPosts || 0,
             postsByWebsite: [],
@@ -47,21 +47,24 @@ export default function AdminDashboard() {
           return;
         }
 
-        // Transform the data to get counts by website
-        const websiteCounts: { [key: string]: number } = {};
-        (posts as any[]).forEach((post) => {
-          const websiteName = post.website.name;
-          websiteCounts[websiteName] = (websiteCounts[websiteName] || 0) + 1;
+        // Get count for each website
+        const postsByWebsitePromises = websites.map(async (website) => {
+          const { count } = await supabase
+            .from("posts")
+            .select("*", { count: "exact", head: true })
+            .eq("website_id", website.id);
+
+          return {
+            name: website.name,
+            count: count || 0,
+          };
         });
+
+        const postsByWebsite = await Promise.all(postsByWebsitePromises);
 
         setStats({
           totalPosts: totalPosts || 0,
-          postsByWebsite: Object.entries(websiteCounts).map(
-            ([name, count]) => ({
-              name,
-              count,
-            })
-          ),
+          postsByWebsite: postsByWebsite.sort((a, b) => b.count - a.count),
         });
       } catch (error) {
         console.error("Error fetching stats:", error);
