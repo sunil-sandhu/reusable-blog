@@ -36,11 +36,9 @@ interface BlogPostWithWebsite {
   id: string;
   title: string;
   slug: string;
-  description: string;
   date: string;
   author: string;
   topic: string;
-  featured_image_url: string;
   created_at: string;
   website: {
     id: string;
@@ -92,7 +90,10 @@ export default function PostsPage() {
     try {
       let query = supabase
         .from("posts")
-        .select("*, website:websites(*)", { count: "exact" })
+        .select(
+          "id, title, slug, author, topic, created_at, website_id, description, website:websites(id, name)",
+          { count: "exact" }
+        )
         .order("created_at", { ascending: false });
 
       // Apply filters
@@ -131,19 +132,17 @@ export default function PostsPage() {
 
       setTotalCount(count || 0);
       setPosts(
-        (posts || []).map((post) => ({
+        (posts || []).map((post: any) => ({
           id: post.id,
           title: post.title,
           slug: post.slug,
-          description: post.description,
           date: post.created_at,
           author: post.author,
           topic: post.topic,
-          featured_image_url: post.featured_image_url,
           created_at: post.created_at,
           website: {
-            id: post.website.id,
-            name: post.website.name,
+            id: post.website?.id || "",
+            name: post.website?.name || "",
           },
         }))
       );
