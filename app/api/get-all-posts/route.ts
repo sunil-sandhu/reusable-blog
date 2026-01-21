@@ -1,6 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+// Map website names to their URL patterns
+function getWebsiteUrl(websiteName: string | null, slug: string): string | null {
+  if (!websiteName || !slug) return null;
+
+  const urlPatterns: Record<string, string> = {
+    "In Plain English": "https://plainenglish.io/blog",
+    "Venture": "https://venturemagazine.net/blog",
+    "Cubed": "https://cubed.run/blog",
+    "Stackademic": "https://stackademic.com/blog",
+  };
+
+  const baseUrl = urlPatterns[websiteName];
+  if (!baseUrl) {
+    // Differ and any other websites without active links
+    return null;
+  }
+
+  return `${baseUrl}/${slug}`;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -45,7 +65,7 @@ export async function GET(request: Request) {
     // Fetch paginated posts with website information joined
     const { data: posts, error: postsError } = await supabase
       .from("posts")
-      .select("title, topic, created_at, website_id, website:websites(*)")
+      .select("title, topic, created_at, website_id, slug, website:websites(*)")
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -56,14 +76,22 @@ export async function GET(request: Request) {
       );
     }
 
-    // Map the data to include website name
-    const mappedPosts = posts.map((post) => ({
-      title: post.title,
-      topic: post.topic,
-      date: post.created_at,
-      website_id: post.website_id,
-      website_name: post.website?.name || null,
-    }));
+    // Map the data to include website name, slug, and URL
+    const mappedPosts = posts.map((post) => {
+      const websiteName = post.website[0]?.name as string | null;
+      const slug = post.slug;
+      const url = getWebsiteUrl(websiteName, slug);
+
+      return {
+        title: post.title,
+        topic: post.topic,
+        date: post.created_at,
+        website_id: post.website_id,
+        website_name: websiteName,
+        slug: slug,
+        url: url,
+      };
+    });
 
     return NextResponse.json({
       posts: mappedPosts,
