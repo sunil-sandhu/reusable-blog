@@ -1,18 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-// Map website names to their URL patterns
-function getWebsiteUrl(websiteName: string | null, slug: string): string | null {
-  if (!websiteName || !slug) return null;
+// Map website IDs to their URL patterns
+function getWebsiteUrl(websiteId: string | null, slug: string): string | null {
+  if (!websiteId || !slug) return null;
 
   const urlPatterns: Record<string, string> = {
-    "In Plain English": "https://plainenglish.io/blog",
-    "Venture": "https://venturemagazine.net/blog",
-    "Cubed": "https://cubed.run/blog",
-    "Stackademic": "https://stackademic.com/blog",
+    "c019f26c-8310-4166-ab71-a954c0de0bf3": "https://plainenglish.io/blog",
+    "ef1b69cf-7cdb-4ebe-849f-463b1a2ad58e": "https://venturemagazine.net/blog",
+    "1bec3555-8ca2-46a9-a497-187500a45b35": "https://cubed.run/blog",
+    "e9e78dca-8727-4e70-9037-0e1127ad397c": "https://stackademic.com/blog",
   };
 
-  const baseUrl = urlPatterns[websiteName];
+  const baseUrl = urlPatterns[websiteId];
   if (!baseUrl) {
     // Differ and any other websites without active links
     return null;
@@ -78,9 +78,11 @@ export async function GET(request: Request) {
 
     // Map the data to include website name, slug, and URL
     const mappedPosts = posts.map((post) => {
-      const websiteName = post.website[0]?.name as string | null;
+      // Handle website as either object or array (defensive coding)
+      const website = Array.isArray(post.website) ? post.website[0] : post.website;
+      const websiteName = website?.name || null;
       const slug = post.slug;
-      const url = getWebsiteUrl(websiteName, slug);
+      const url = getWebsiteUrl(post.website_id, slug);
 
       return {
         title: post.title,
