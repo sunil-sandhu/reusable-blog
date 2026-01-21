@@ -26,6 +26,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "50", 10);
+    const websiteIdParam = searchParams.get("website_id");
 
     // Validate pagination parameters
     if (page < 1) {
@@ -44,13 +45,29 @@ export async function GET(request: Request) {
 
     const supabase = await createClient();
 
+    // Parse website_id filter (supports comma-separated values for multiple websites)
+    let websiteIds: string[] | null = null;
+    if (websiteIdParam) {
+      websiteIds = websiteIdParam.split(",").map((id) => id.trim()).filter(Boolean);
+      if (websiteIds.length === 0) {
+        return NextResponse.json(
+          { error: "Invalid website_id parameter" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Calculate offset
     const offset = (page - 1) * limit;
 
+    // Build count query with optional website filter
+    let countQuery = supabase.from("posts").select("*", { count: "exact", head: true });
+    if (websiteIds) {
+      countQuery = countQuery.in("website_id", websiteIds);
+    }
+
     // Get total count
-    const { count, error: countError } = await supabase
-      .from("posts")
-      .select("*", { count: "exact", head: true });
+    const { count, error: countError } = await countQuery;
 
     if (countError) {
       return NextResponse.json(
@@ -62,12 +79,19 @@ export async function GET(request: Request) {
     const totalPosts = count || 0;
     const totalPages = Math.ceil(totalPosts / limit);
 
-    // Fetch paginated posts with website information joined
-    const { data: posts, error: postsError } = await supabase
+    // Build posts query with optional website filter
+    let postsQuery = supabase
       .from("posts")
       .select("title, topic, created_at, website_id, slug, website:websites(*)")
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
+
+    if (websiteIds) {
+      postsQuery = postsQuery.in("website_id", websiteIds);
+    }
+
+    // Fetch paginated posts with website information joined
+    const { data: posts, error: postsError } = await postsQuery;
 
     if (postsError) {
       return NextResponse.json(
