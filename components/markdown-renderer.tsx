@@ -29,17 +29,18 @@ export function MarkdownRenderer({
   isMDX = false,
   title,
 }: MarkdownRendererProps) {
-  const commonClassName = `prose prose-lg dark:prose-invert max-w-none 
-    prose-headings:text-foreground dark:prose-headings:text-foreground
-    prose-p:text-foreground/80 dark:prose-p:text-foreground/80
-    prose-a:text-brand hover:prose-a:underline 
-    prose-img:rounded-xl 
-    prose-pre:bg-background/95 dark:prose-pre:bg-background/95
-    prose-pre:border prose-pre:border-solid prose-pre:border-border dark:prose-pre:border-border
-    prose-hr:border-border dark:prose-hr:border-border
-    prose-blockquote:border-l-4 prose-blockquote:border-brand/30
-    prose-strong:text-foreground dark:prose-strong:text-foreground
-    prose-ul:marker:text-foreground/60 dark:prose-ul:marker:text-foreground/60
+  const commonClassName = `prose prose-lg max-w-none 
+    prose-headings:text-black prose-headings:font-serif
+    prose-p:text-black prose-p:font-serif prose-p:leading-relaxed prose-p:mb-6
+    prose-a:text-black prose-a:underline hover:prose-a:opacity-70
+    prose-img:w-full prose-img:h-auto prose-img:my-8
+    prose-pre:bg-gray-100 prose-pre:border prose-pre:border-solid prose-pre:border-gray-300
+    prose-hr:border-gray-300
+    prose-blockquote:border-l-4 prose-blockquote:border-gray-400 prose-blockquote:font-serif
+    prose-strong:text-black prose-strong:font-serif
+    prose-ul:font-serif prose-ul:my-6 prose-ul:pl-6
+    prose-li:mb-2 prose-li:font-serif
+    prose-ol:font-serif prose-ol:my-6 prose-ol:pl-6
     ${className}`;
 
 

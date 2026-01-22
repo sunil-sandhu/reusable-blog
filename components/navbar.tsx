@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeSwitcher } from "./theme-switcher";
 
 const navItems = [
   {
@@ -9,16 +9,8 @@ const navItems = [
     href: "/",
   },
   {
-    label: "Blog",
+    label: "Latest",
     href: "/blog",
-  },
-  {
-    label: "Topics",
-    href: "/topics",
-  },
-  {
-    label: "Authors",
-    href: "/authors",
   },
 ];
 
@@ -28,29 +20,28 @@ export function Navbar() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-12 bg-background border-b border-border z-50">
-      <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-full flex items-center justify-between">
+    <nav className="w-full border-b border-gray-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center justify-between">
           {/* Logo/Brand */}
-          <div className="flex flex-row gap-4">
+          <Link href="/" className="text-2xl font-bold uppercase tracking-tight text-black">
+            {process.env.NEXT_PUBLIC_WEBSITE_NAME || "The Blog"}
+          </Link>
+
+          {/* Navigation Links */}
+          <div className="flex items-center gap-8">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                className={`text-md font-bold  ${
-                  isActive(item.href) ? "text-brand" : "text-foreground"
+                className={`text-sm font-normal text-black hover:opacity-70 transition-opacity ${
+                  isActive(item.href) ? "font-semibold" : ""
                 }`}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
-
-          <ThemeSwitcher />
-        </div>
-        {/* Navigation Links - Empty for now */}
-        <div className="hidden md:flex items-center space-x-8">
-          {/* Links will go here */}
         </div>
       </div>
     </nav>

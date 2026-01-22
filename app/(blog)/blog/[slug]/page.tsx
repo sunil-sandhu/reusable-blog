@@ -2,7 +2,6 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { BlogPostHeader } from "@/components/blog-post-header";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import TableOfContents from "@/components/table-of-contents";
 import { getPost } from "@/lib/blog";
 
 export async function generateMetadata({
@@ -58,16 +57,25 @@ export default async function BlogPostPage({
   }
 
   return (
-    <article className="relative w-full mx-auto">
-      {/* Full-width header section */}
+    <article className="relative w-full mx-auto bg-white">
+      {/* Header section */}
       <BlogPostHeader post={post} />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Content section with TOC */}
 
-        {/* Table of Contents */}
-        <TableOfContents />
+      {/* Hero Image */}
+      {post.featured_image_url && (
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="w-full overflow-hidden">
+            <img
+              src={post.featured_image_url}
+              alt={post.title}
+              className="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+      )}
 
-        {/* Main Content Area */}
+      {/* Article Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <MarkdownRenderer
           content={post.content}
           isMDX={post.isMDX}

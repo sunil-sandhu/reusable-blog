@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow bg-white">{children}</main>
       <Footer />
     </div>
   );

@@ -1,6 +1,5 @@
 import { slugify } from "@/lib/utils";
 import Link from "next/link";
-import { Badge } from "./badge";
 import { BlogPost } from "@/lib/blog/types";
 
 interface BlogPostHeaderProps {
@@ -8,47 +7,36 @@ interface BlogPostHeaderProps {
 }
 
 export function BlogPostHeader({ post }: BlogPostHeaderProps) {
-  // Format the date
-  const formattedDate = new Date(post.date || "").toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   return (
-    <header className="w-full mx-auto mb-12 pb-12 lg:pt-24 lg:pb-24 bg-gradient-to-t from-brand/40 to-brand/10">
-      <div className="max-w-7xl p-0 mx-auto w-full text-center">
-        <div className="space-y-6 text-center">
-          {post.topic && <Badge label={post.topic} directory="topics" />}
+    <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-6">
+        {/* Category Tag */}
+        {post.topic && (
+          <span className="text-xs uppercase tracking-wide text-gray-500 block">
+            {post.topic}
+          </span>
+        )}
 
-          {/* Title */}
-          <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight px-4">
-              {post.title}
-            </h1>
-          </div>
+        {/* Title */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-black">
+          {post.title}
+        </h1>
 
-          {/* Author and Date */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm justify-center">
-            {post.author && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-text dark:text-gray-500">By</span>
-                <p className="font-medium text-heading dark:text-gray-200 hover:text-brand dark:hover:text-brand transition-colors">
-                  <Link href={`/authors/${slugify(post.author)}`}>
-                    {post.author}
-                  </Link>
-                </p>
-              </div>
-            )}
-            {post.date && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-text dark:text-gray-500 mr-1">•</span>
-                <span className="font-medium">Published on</span>
-                <time className="text-sm text-gray-500">{formattedDate}</time>
-              </div>
-            )}
+        {/* Author with Avatar */}
+        {post.author && (
+          <div className="flex items-center gap-3">
+            {/* Avatar - using a placeholder circle for now */}
+            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+              {post.author.charAt(0).toUpperCase()}
+            </div>
+            <Link
+              href={`/authors/${slugify(post.author)}`}
+              className="text-sm font-normal text-black hover:opacity-70 transition-opacity"
+            >
+              {post.author.toUpperCase()}
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </header>
   );

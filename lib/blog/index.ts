@@ -18,9 +18,12 @@ export async function getAllPosts(
     posts.push(...supabasePosts);
   }
 
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  return posts.sort((a, b) => {
+    const dateA = a.date ? new Date(a.date).getTime() : 0;
+    const dateB = b.date ? new Date(b.date).getTime() : 0;
+    // Sort in reverse chronological order (most recent first)
+    return dateB - dateA;
+  });
 }
 
 export async function getPost(

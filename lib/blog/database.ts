@@ -16,7 +16,18 @@ export async function getAllDatabasePosts(): Promise<BlogPost[]> {
       return [];
     }
 
-    return data;
+    // Map the date field from created_at to ensure consistent sorting
+    return data.map((post) => ({
+      ...post,
+      slug: post.slug,
+      title: post.title,
+      description: post.description,
+      date: post.created_at || post.date,
+      author: post.author,
+      topic: post.topic,
+      featured_image_url: post.featured_image_url,
+      content: post.content,
+    }));
   } else {
     const supabase = createClient();
     const { data, error } = await supabase
@@ -35,7 +46,7 @@ export async function getAllDatabasePosts(): Promise<BlogPost[]> {
       slug: post.slug,
       title: post.title,
       description: post.description,
-      date: post.created_at,
+      date: post.created_at || post.date,
       author: post.author,
       topic: post.topic,
       featured_image_url: post.featured_image_url,
