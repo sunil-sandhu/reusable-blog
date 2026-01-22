@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const revalidate = 86400; // Revalidate every 24 hours as fallback
 
 export default async function HomePage() {
-  const allPosts = await getAllPosts();
+  const allPosts = await getAllPosts("database");
   
   // Featured post (first post)
   const featuredPost = allPosts[0];

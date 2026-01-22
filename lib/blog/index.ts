@@ -4,7 +4,7 @@ import { getAllDatabasePosts, getDatabasePost } from "./database";
 import { slugify } from "../utils";
 
 export async function getAllPosts(
-  source: DataSource = "all"
+  source: DataSource = "database"
 ): Promise<BlogPost[]> {
   const posts: BlogPost[] = [];
 
@@ -28,7 +28,7 @@ export async function getAllPosts(
 
 export async function getPost(
   slug: string,
-  source: DataSource = "all"
+  source: DataSource = "database"
 ): Promise<BlogPost | null> {
   if (source === "all" || source === "local") {
     const localPost = await getLocalPost(slug);
