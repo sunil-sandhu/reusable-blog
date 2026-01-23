@@ -25,7 +25,7 @@ export default async function AuthorPage({
             <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
               <article className="flex flex-col">
                 {post.featured_image_url ? (
-                  <div className="relative w-full aspect-square mb-4 overflow-hidden">
+                  <div className="relative w-full aspect-video mb-4 overflow-hidden">
                     <img
                       src={post.featured_image_url}
                       alt={post.title}
@@ -33,7 +33,7 @@ export default async function AuthorPage({
                     />
                   </div>
                 ) : (
-                  <div className="relative w-full aspect-square mb-4 bg-gray-200" />
+                  <div className="relative w-full aspect-video mb-4 bg-gray-200" />
                 )}
                 {post.topic && (
                   <span className="text-xs uppercase tracking-wide text-gray-500 mb-2">

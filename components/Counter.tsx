@@ -6,7 +6,7 @@ export function Counter({ initialCount = 0 }: { initialCount?: number }) {
   const [count, setCount] = useState(initialCount);
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <div className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
       <button
         onClick={() => setCount(count - 1)}
         className="px-3 py-1 bg-brand text-white rounded hover:bg-brand/90 transition-colors"

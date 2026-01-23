@@ -4,7 +4,6 @@ import "@/app/globals.css";
 import "@/app/blog.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import ThemeProvider from "@/components/theme-provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 const ibmPlexSans = IBM_Plex_Sans({

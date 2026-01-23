@@ -67,6 +67,27 @@ export function MarkdownRenderer({
           [rehypePrism, { ignoreMissing: true }],
         ]}
         components={{
+          h2: ({ node, ...props }) => (
+            <h2
+              {...props}
+              style={{ scrollMarginTop: "100px" }}
+              className="scroll-mt-24"
+            />
+          ),
+          h3: ({ node, ...props }) => (
+            <h3
+              {...props}
+              style={{ scrollMarginTop: "100px" }}
+              className="scroll-mt-24"
+            />
+          ),
+          h4: ({ node, ...props }) => (
+            <h4
+              {...props}
+              style={{ scrollMarginTop: "100px" }}
+              className="scroll-mt-24"
+            />
+          ),
           table: ({ children, ...props }) => (
             <Table {...props}>{children}</Table>
           ),

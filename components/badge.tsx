@@ -12,7 +12,7 @@ export function Badge({
 
   return (
     <div className="pt-2">
-      <p className="inline-flex px-3.5 py-1.5 text-sm font-medium text-brand hover:text-brand/80 bg-brand/5 dark:bg-brand/10 rounded-full transition-colors">
+      <p className="inline-flex px-3.5 py-1.5 text-sm font-medium text-brand hover:text-brand/80 bg-brand/5 rounded-full transition-colors">
         <Link href={`${directory ? `/${directory}` : ""}/${slug}`}>
           {label}
         </Link>

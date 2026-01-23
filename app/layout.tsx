@@ -4,7 +4,6 @@ import "./globals.css";
 import "./blog.css";
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
-import ThemeProvider from "@/components/theme-provider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -30,18 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${ibmPlexSans.className}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="min-h-screen flex flex-col">
-            <main className="flex-grow">{children}</main>
-          </div>
-        </ThemeProvider>
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-grow">{children}</main>
+        </div>
       </body>
       {process.env.GOOGLE_ANALYTICS_ID && (
         <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID} />

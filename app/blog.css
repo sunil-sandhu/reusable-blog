@@ -1,12 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Heading scroll margin for hash links */
+.prose h2,
+.prose h3,
+.prose h4 {
+  scroll-margin-top: 100px;
+}
 
 /* Code block base styles */
 .prose pre {
   @apply relative 
-      bg-gray-900 dark:bg-gray-950 
+      bg-gray-900 
       rounded-xl 
       shadow-lg 
       border border-gray-800/40
@@ -15,7 +20,7 @@
 }
 
 .prose pre code {
-  @apply text-gray-200 dark:text-gray-300
+  @apply text-gray-200
       font-mono 
       text-sm 
       leading-relaxed
@@ -71,7 +76,7 @@
 /* Syntax highlighting */
 .prose .hljs-comment,
 .prose .hljs-quote {
-  @apply text-gray-500 dark:text-gray-400 italic;
+  @apply text-gray-500 italic;
 }
 
 /* MDX Editor Container - Allow sticky positioning */
@@ -98,33 +103,33 @@
 .prose .hljs-keyword,
 .prose .hljs-selector-tag,
 .prose .hljs-addition {
-  @apply text-purple-400 dark:text-purple-300;
+  @apply text-purple-400;
 }
 
 .prose .hljs-string,
 .prose .hljs-template-string {
-  @apply text-green-400 dark:text-green-300;
+  @apply text-green-400;
 }
 
 .prose .hljs-number,
 .prose .hljs-literal {
-  @apply text-orange-400 dark:text-orange-300;
+  @apply text-orange-400;
 }
 
 .prose .hljs-function,
 .prose .hljs-title {
-  @apply text-blue-400 dark:text-blue-300;
+  @apply text-blue-400;
 }
 
 .prose .hljs-variable,
 .prose .hljs-attr {
-  @apply text-yellow-400 dark:text-yellow-300;
+  @apply text-yellow-400;
 }
 
 /* Inline code */
 .prose :not(pre) > code {
-  @apply bg-gray-100 dark:bg-gray-800
-      text-gray-900 dark:text-gray-200
+  @apply bg-gray-100
+      text-gray-900
       rounded-md 
       px-1.5 
       py-0.5

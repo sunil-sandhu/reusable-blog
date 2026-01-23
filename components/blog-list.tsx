@@ -35,7 +35,7 @@ export function BlogList({ posts }: BlogListProps) {
                     {formattedDate}
                   </time>
                 )}
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-gray-600">
                   {post.description}
                 </p>
               </div>

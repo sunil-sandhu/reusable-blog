@@ -5,7 +5,6 @@ import { serialize } from "next-mdx-remote/serialize";
 import remarkGfm from "remark-gfm";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import { ThemeSwitcher } from "./theme-switcher";
 import {
   Table,
   TableHeader,
@@ -41,7 +40,9 @@ export function MDXRenderer({ source }: MDXRendererProps) {
       {...serializedSource}
       components={{
         Button,
-        ThemeSwitcher,
+        h2: ({ ...props }) => <h2 {...props} className="scroll-mt-24" />,
+        h3: ({ ...props }) => <h3 {...props} className="scroll-mt-24" />,
+        h4: ({ ...props }) => <h4 {...props} className="scroll-mt-24" />,
         table: Table,
         thead: TableHeader,
         tbody: TableBody,

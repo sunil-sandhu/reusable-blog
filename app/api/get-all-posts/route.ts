@@ -1,25 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-
-// Map website IDs to their URL patterns
-function getWebsiteUrl(websiteId: string | null, slug: string): string | null {
-  if (!websiteId || !slug) return null;
-
-  const urlPatterns: Record<string, string> = {
-    "c019f26c-8310-4166-ab71-a954c0de0bf3": "https://plainenglish.io/blog",
-    "ef1b69cf-7cdb-4ebe-849f-463b1a2ad58e": "https://venturemagazine.net/blog",
-    "1bec3555-8ca2-46a9-a497-187500a45b35": "https://cubed.run/blog",
-    "e9e78dca-8727-4e70-9037-0e1127ad397c": "https://stackademic.com/blog",
-  };
-
-  const baseUrl = urlPatterns[websiteId];
-  if (!baseUrl) {
-    // Differ and any other websites without active links
-    return null;
-  }
-
-  return `${baseUrl}/${slug}`;
-}
+import { getWebsiteUrl } from "@/lib/website-urls";
 
 export async function GET(request: Request) {
   try {
@@ -46,6 +27,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
 
     // Parse website_id filter (supports comma-separated values for multiple websites)
+    // If WEBSITE_ID env var is set and no website_id param is provided, use the env var
     let websiteIds: string[] | null = null;
     if (websiteIdParam) {
       websiteIds = websiteIdParam.split(",").map((id) => id.trim()).filter(Boolean);
@@ -55,6 +37,9 @@ export async function GET(request: Request) {
           { status: 400 }
         );
       }
+    } else if (process.env.WEBSITE_ID) {
+      // Use WEBSITE_ID from environment if no param is provided
+      websiteIds = [process.env.WEBSITE_ID];
     }
 
     // Calculate offset
@@ -82,7 +67,7 @@ export async function GET(request: Request) {
     // Build posts query with optional website filter
     let postsQuery = supabase
       .from("posts")
-      .select("title, topic, created_at, website_id, slug, website:websites(*)")
+      .select("title, topic, created_at, website_id, slug, featured_image_url, author, website:websites(*)")
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -116,6 +101,8 @@ export async function GET(request: Request) {
         website_name: websiteName,
         slug: slug,
         url: url,
+        featured_image_url: post.featured_image_url,
+        author: post.author,
       };
     });
 
