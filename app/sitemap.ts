@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getAllDatabasePosts } from "@/lib/blog/database";
+import { getDatabasePostsForSitemap } from "@/lib/blog/database";
 
 // revalidate the sitemap every hour
 export const revalidate = 3600;
@@ -16,8 +16,8 @@ type ChangeFreq =
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
-  // Get all blog posts from Supabase
-  const posts = await getAllDatabasePosts();
+  // Get all blog posts from Supabase (only slug and date for sitemap)
+  const posts = await getDatabasePostsForSitemap();
 
   // Generate static page entries
   const staticPages = [
