@@ -1,11 +1,16 @@
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { BlogPostHeader } from "@/components/blog-post-header";
 import { InlineTableOfContents } from "@/components/inline-table-of-contents";
+import { FAQSection } from "@/components/faq-section";
+import { BlogPostSchema } from "@/components/blog-post-schema";
+import { ViewTracker } from "@/components/view-tracker";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getPost } from "@/lib/blog";
 import { createClient } from "@/lib/supabase/server";
 import { getWebsiteUrl } from "@/lib/website-urls";
+
+
 
 export async function generateMetadata({
   params,
@@ -120,21 +125,57 @@ export default async function BlogPostPage({
     notFound();
   }
 
+  // Fetch FAQ if post has an ID
+  let faqs = null;
+  if (post.id) {
+    const supabase = await createClient();
+    const { data: faqData } = await supabase
+      .from("post_faqs")
+      .select("faq_content, visible")
+      .eq("post_id", post.id)
+      .eq("visible", true)
+      .single();
+
+    if (faqData && faqData.faq_content && Array.isArray(faqData.faq_content)) {
+      faqs = faqData.faq_content;
+    }
+  }
+
   const networkPosts = await getNetworkPosts();
 
+  // Get base URL and organization name for schema
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "";
+  const organizationName = process.env.NEXT_PUBLIC_WEBSITE_NAME || "";
+
   return (
-    <article className="relative w-full mx-auto bg-white">
-      {/* Header section */}
-      <BlogPostHeader post={post} />
+    <>
+      {/* Track page view (production only) */}
+      <ViewTracker slug={slug} />
+
+      {/* Comprehensive Schema Markup for AEO */}
+      <BlogPostSchema
+        post={post}
+        faqs={faqs || [] as {
+          question: string;
+          answer: string;
+        }[]}
+        baseUrl={baseUrl}
+        organizationName={organizationName}
+      />
+
+      <article className="relative w-full mx-auto bg-white" itemScope itemType="https://schema.org/TechArticle">
+        {/* Header section */}
+        <BlogPostHeader post={post} />
 
       {/* Hero Image */}
       {post.featured_image_url && (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div className="w-full overflow-hidden">
+          <div className="w-full overflow-hidden" itemScope itemType="https://schema.org/ImageObject" itemProp="image">
             <img
               src={post.featured_image_url}
               alt={post.title}
               className="w-full h-auto object-cover"
+              itemProp="url"
             />
           </div>
         </div>
@@ -149,6 +190,11 @@ export default async function BlogPostPage({
           title={post.title}
         />
       </div>
+
+      {/* FAQ Section */}
+      {faqs && faqs.length > 0 && (
+        <FAQSection faqs={faqs} postTitle={post.title} />
+      )}
 
       {/* Posts Across the Network Section */}
       {networkPosts.length > 0 && (
@@ -213,6 +259,7 @@ export default async function BlogPostPage({
           </div>
         </section>
       )}
-    </article>
+      </article>
+    </>
   );
 }

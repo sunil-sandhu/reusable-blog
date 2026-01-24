@@ -115,7 +115,7 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
     const supabase = createClient();
     const { data, error } = await supabase
       .from("posts")
-      .select("slug, title, description, created_at, author, topic, featured_image_url, content")
+      .select("id, slug, title, description, created_at, author, topic, featured_image_url, content")
       .eq("slug", slug)
       .single();
 
@@ -131,6 +131,7 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
 
     return {
       ...data,
+      id: data.id,
       slug: data.slug,
       title: data.title,
       description: data.description,
@@ -144,7 +145,7 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
     const supabase = createClient();
     const { data, error } = await supabase
       .from("posts")
-      .select("slug, title, description, created_at, author, topic, featured_image_url, content")
+      .select("id, slug, title, description, created_at, author, topic, featured_image_url, content")
       .eq("slug", slug)
       .eq("website_id", process.env.WEBSITE_ID)
       .single();
@@ -160,6 +161,7 @@ export async function getDatabasePost(slug: string): Promise<BlogPost | null> {
 
     return {
       ...data,
+      id: data.id,
       slug: data.slug,
       title: data.title,
       description: data.description,

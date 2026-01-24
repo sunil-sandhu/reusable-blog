@@ -5,6 +5,7 @@ import "./blog.css";
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Toaster } from "@/components/ui/sonner";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
           <main className="flex-grow">{children}</main>
         </div>
+        <Toaster />
       </body>
       {process.env.GOOGLE_ANALYTICS_ID && (
         <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID} />

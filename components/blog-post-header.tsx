@@ -12,19 +12,25 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
       <div className="space-y-6">
         {/* Category Tag */}
         {post.topic && (
-          <span className="text-xs uppercase tracking-wide text-gray-500 block">
+          <span
+            className="text-xs uppercase tracking-wide text-gray-500 block"
+            itemProp="articleSection"
+          >
             {post.topic}
           </span>
         )}
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-black">
+        <h1
+          className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-black"
+          itemProp="headline"
+        >
           {post.title}
         </h1>
 
         {/* Author with Avatar */}
         {post.author && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" itemScope itemType="https://schema.org/Person" itemProp="author">
             {/* Avatar - using a placeholder circle for now */}
             <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
               {post.author.charAt(0).toUpperCase()}
@@ -32,10 +38,22 @@ export function BlogPostHeader({ post }: BlogPostHeaderProps) {
             <Link
               href={`/authors/${slugify(post.author)}`}
               className="text-sm font-normal text-black hover:opacity-70 transition-opacity"
+              itemProp="name"
             >
               {post.author.toUpperCase()}
             </Link>
           </div>
+        )}
+
+        {/* Date Published - Hidden but with microdata */}
+        {post.date && (
+          <time
+            dateTime={new Date(post.date).toISOString()}
+            itemProp="datePublished"
+            className="sr-only"
+          >
+            {new Date(post.date).toISOString()}
+          </time>
         )}
       </div>
     </header>
