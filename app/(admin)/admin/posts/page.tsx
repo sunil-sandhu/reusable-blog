@@ -30,6 +30,9 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from "lucide-react";
 
 interface BlogPostWithWebsite {
@@ -40,6 +43,7 @@ interface BlogPostWithWebsite {
   author: string;
   topic: string;
   created_at: string;
+  views: number;
   website: {
     id: string;
     name: string;
@@ -69,6 +73,9 @@ export default function PostsPage() {
     field: string;
   } | null>(null);
   const [editingValue, setEditingValue] = useState("");
+  const [sortColumn, setSortColumn] = useState<string>("created_at");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [allPosts, setAllPosts] = useState<BlogPostWithWebsite[]>([]);
   const supabase = createClient();
 
   useEffect(() => {
@@ -82,6 +89,54 @@ export default function PostsPage() {
     fetchWebsites();
   }, []);
 
+  const sortPosts = (
+    postsToSort: BlogPostWithWebsite[],
+    column: string,
+    direction: "asc" | "desc"
+  ): BlogPostWithWebsite[] => {
+    return [...postsToSort].sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      switch (column) {
+        case "title":
+          aValue = a.title?.toLowerCase() || "";
+          bValue = b.title?.toLowerCase() || "";
+          break;
+        case "slug":
+          aValue = a.slug?.toLowerCase() || "";
+          bValue = b.slug?.toLowerCase() || "";
+          break;
+        case "website_id":
+          aValue = a.website?.name?.toLowerCase() || "";
+          bValue = b.website?.name?.toLowerCase() || "";
+          break;
+        case "author":
+          aValue = a.author?.toLowerCase() || "";
+          bValue = b.author?.toLowerCase() || "";
+          break;
+        case "topic":
+          aValue = a.topic?.toLowerCase() || "";
+          bValue = b.topic?.toLowerCase() || "";
+          break;
+        case "created_at":
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+          break;
+        case "views":
+          aValue = a.views || 0;
+          bValue = b.views || 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
+
   const performSearch = async (page: number = 1) => {
     setLoading(true);
     setCurrentPage(page);
@@ -91,10 +146,9 @@ export default function PostsPage() {
       let query = supabase
         .from("posts")
         .select(
-          "id, title, slug, author, topic, created_at, website_id, description, website:websites(id, name)",
+          "id, title, slug, author, topic, created_at, website_id, description, views, website:websites(id, name)",
           { count: "exact" }
-        )
-        .order("created_at", { ascending: false });
+        );
 
       // Apply filters
       if (filterWebsite !== "all") {
@@ -117,11 +171,7 @@ export default function PostsPage() {
         );
       }
 
-      // Apply pagination
-      const from = (page - 1) * POSTS_PER_PAGE;
-      const to = from + POSTS_PER_PAGE - 1;
-      query = query.range(from, to);
-
+      // Fetch all matching posts (no pagination limit for client-side sorting)
       const { data: posts, error, count } = await query;
 
       if (error) {
@@ -130,22 +180,31 @@ export default function PostsPage() {
         return;
       }
 
+      const mappedPosts = (posts || []).map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        date: post.created_at,
+        author: post.author,
+        topic: post.topic,
+        created_at: post.created_at,
+        views: post.views || 0,
+        website: {
+          id: post.website?.id || "",
+          name: post.website?.name || "",
+        },
+      }));
+
+      // Sort posts client-side
+      const sortedPosts = sortPosts(mappedPosts, sortColumn, sortDirection);
+
       setTotalCount(count || 0);
-      setPosts(
-        (posts || []).map((post: any) => ({
-          id: post.id,
-          title: post.title,
-          slug: post.slug,
-          date: post.created_at,
-          author: post.author,
-          topic: post.topic,
-          created_at: post.created_at,
-          website: {
-            id: post.website?.id || "",
-            name: post.website?.name || "",
-          },
-        }))
-      );
+      setAllPosts(sortedPosts);
+
+      // Apply pagination client-side
+      const from = (page - 1) * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE;
+      setPosts(sortedPosts.slice(from, to));
     } catch (error) {
       console.error("Error searching posts:", error);
     } finally {
@@ -155,6 +214,37 @@ export default function PostsPage() {
 
   const handleSearch = () => {
     performSearch(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Apply pagination to sorted posts
+    const from = (page - 1) * POSTS_PER_PAGE;
+    const to = from + POSTS_PER_PAGE;
+    setPosts(allPosts.slice(from, to));
+  };
+
+  const handleSort = (column: string) => {
+    let newDirection: "asc" | "desc";
+    if (sortColumn === column) {
+      // Toggle direction if clicking the same column
+      newDirection = sortDirection === "asc" ? "desc" : "asc";
+      setSortDirection(newDirection);
+    } else {
+      // Set new column and default to descending
+      setSortColumn(column);
+      newDirection = "desc";
+      setSortDirection(newDirection);
+    }
+
+    // Sort existing posts client-side
+    const sortedPosts = sortPosts(allPosts, column, newDirection);
+    setAllPosts(sortedPosts);
+
+    // Apply pagination to sorted posts
+    const from = (currentPage - 1) * POSTS_PER_PAGE;
+    const to = from + POSTS_PER_PAGE;
+    setPosts(sortedPosts.slice(from, to));
   };
 
   const handleDoubleClick = (postId: string, field: string, value: string) => {
@@ -187,36 +277,37 @@ export default function PostsPage() {
       if (error) throw error;
 
       // Update local state
-      setPosts((prevPosts) =>
-        prevPosts.map((p) => {
-          if (p.id !== postId) return p;
-          if (field === "website") {
-            const website = websites.find((w) => w.id === editingValue);
-            return {
-              ...p,
-              website: {
-                id: editingValue,
-                name: website?.name || "",
-              },
-            };
-          } else if (field === "date") {
-            return {
-              ...p,
-              date: editingValue,
-              created_at: editingValue,
-            };
-          }
+      const updatePost = (p: BlogPostWithWebsite) => {
+        if (p.id !== postId) return p;
+        if (field === "website") {
+          const website = websites.find((w) => w.id === editingValue);
           return {
             ...p,
-            [field]: editingValue,
+            website: {
+              id: editingValue,
+              name: website?.name || "",
+            },
           };
-        })
-      );
+        } else if (field === "date") {
+          return {
+            ...p,
+            date: editingValue,
+            created_at: editingValue,
+          };
+        }
+        return {
+          ...p,
+          [field]: editingValue,
+        };
+      };
+
+      setAllPosts((prevAllPosts) => prevAllPosts.map(updatePost));
+      setPosts((prevPosts) => prevPosts.map(updatePost));
 
       // Revalidate pages after successful update
       await revalidatePages();
 
-      // Refresh current page data
+      // Refresh current page data to ensure consistency
       await performSearch(currentPage);
     } catch (error) {
       console.error("Error updating post:", error);
@@ -442,7 +533,7 @@ export default function PostsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => performSearch(currentPage - 1)}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1 || loading}
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -454,7 +545,7 @@ export default function PostsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => performSearch(currentPage + 1)}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages || loading}
                   >
                     Next
@@ -474,19 +565,132 @@ export default function PostsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Website</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>Topic</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("title")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Title
+                      {sortColumn === "title" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("slug")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Slug
+                      {sortColumn === "slug" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("website_id")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Website
+                      {sortColumn === "website_id" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("author")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Author
+                      {sortColumn === "author" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("topic")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Topic
+                      {sortColumn === "topic" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("created_at")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Date
+                      {sortColumn === "created_at" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50 select-none"
+                    onClick={() => handleSort("views")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Views
+                      {sortColumn === "views" ? (
+                        sortDirection === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-4 w-4 opacity-30" />
+                      )}
+                    </div>
+                  </TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {!hasSearched ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-12">
                       <div className="flex flex-col items-center gap-2">
                         <Search className="h-8 w-8 text-muted-foreground" />
                         <p className="text-muted-foreground font-medium">
@@ -500,7 +704,7 @@ export default function PostsPage() {
                   </TableRow>
                 ) : loading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-12">
                       <div className="flex flex-col items-center gap-2">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         <p className="text-muted-foreground">
@@ -511,7 +715,7 @@ export default function PostsPage() {
                   </TableRow>
                 ) : posts.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12">
+                    <TableCell colSpan={8} className="text-center py-12">
                       <div className="flex flex-col items-center gap-2">
                         <Search className="h-8 w-8 text-muted-foreground" />
                         <p className="text-muted-foreground font-medium">
@@ -698,6 +902,9 @@ export default function PostsPage() {
                         ) : (
                           format(new Date(post.date), "PPP")
                         )}
+                      </TableCell>
+                      <TableCell>
+                        {post.views || 0}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
